@@ -1,3 +1,23 @@
+#!/bin/bash
+
+#
+has_element() {
+    local e
+    for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+    return 1
+}
+
+# Get the current diff from git
+diff_pre=($(git diff --name-only))
+
+# Format files
 cargo fmt
+
+diff_post=($(git diff --name-only))
+
+for val in "${diff_post[@]}"; do
+    if has_element "$val" "${diff_pre[@]}"
+done
+
 cargo test
 cargo doc
