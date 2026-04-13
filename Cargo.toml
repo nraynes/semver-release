@@ -5,7 +5,7 @@ authors = ["Nicholas Raynes"]
 description = "A simple semantic versioning tool. Can be used in a release workflow as a command line tool with plugins."
 edition = "2024"
 license  = "MIT"
-repository = ""
+repository = "https://github.com/nraynes/semver-release"
 keywords = ["semver", "release", "semantic", "project", "tools"]
 categories = ["command-line-utilities", "development-tools"]
 
