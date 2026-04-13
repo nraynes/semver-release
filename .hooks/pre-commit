@@ -16,7 +16,9 @@ cargo fmt
 diff_post=($(git diff --name-only))
 
 for val in "${diff_post[@]}"; do
-    if has_element "$val" "${diff_pre[@]}"
+    if ! has_element "$val" "${diff_pre[@]}"; then
+        git add "$val"
+    fi
 done
 
 cargo test
