@@ -10,3 +10,7 @@ keywords = ["semver", "release", "semantic", "project", "tools"]
 categories = ["command-line-utilities", "development-tools"]
 
 [dependencies]
+chrono = "0.4.44"
+indexmap = "2.14.0"
+regex = "1.12.3"
+rust-yaml = "0.0.5"

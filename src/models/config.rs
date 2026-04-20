@@ -1,0 +1,108 @@
+use crate::{
+    ChangeList,
+    models::{Alert, Change},
+};
+use indexmap::IndexMap;
+use rust_yaml::{Value, Yaml};
+use std::fs;
+
+pub struct Config {
+    release_branch: String,
+    major_changes: ChangeList,
+    minor_changes: ChangeList,
+    patch_changes: ChangeList,
+    other_changes: ChangeList,
+    generate_changelog: bool,
+}
+
+impl Config {
+    pub fn release_branch(&self) -> &str {
+        &self.release_branch
+    }
+
+    pub fn major_changes(&self) -> &ChangeList {
+        &self.major_changes
+    }
+
+    pub fn minor_changes(&self) -> &ChangeList {
+        &self.minor_changes
+    }
+
+    pub fn patch_changes(&self) -> &ChangeList {
+        &self.patch_changes
+    }
+
+    pub fn other_changes(&self) -> &ChangeList {
+        &self.other_changes
+    }
+
+    pub fn generate_changelog(&self) -> &bool {
+        &self.generate_changelog
+    }
+
+    pub fn load(yaml: Value) -> Result<Config, Alert> {
+        let conf = Config::parse_yaml(yaml)?;
+        Ok(Config {
+            release_branch: conf.0,
+            major_changes: conf.1,
+            minor_changes: conf.2,
+            patch_changes: conf.3,
+            other_changes: conf.4,
+            generate_changelog: conf.5,
+        })
+    }
+
+    pub fn load_from_file(file_path: String) -> Result<Config, Alert> {
+        let config_file = fs::read_to_string(file_path)?;
+        let yaml = Yaml::new();
+        let config_contents = yaml.load_str(&config_file)?;
+        let config = Config::load(config_contents)?;
+        Ok(config)
+    }
+
+    fn parse_yaml(
+        yaml: Value,
+    ) -> Result<(String, ChangeList, ChangeList, ChangeList, ChangeList, bool), Alert> {
+        let conf = yaml
+            .as_mapping()
+            .ok_or("Could not parse yaml from config file.")?;
+        let master_branch = Value::from("release_branch");
+        let release_branch = conf
+            .get(&Value::from("release_branch"))
+            .unwrap_or(&master_branch)
+            .as_str()
+            .ok_or("Could not get release_branch.")?;
+        let major_changes = Config::parse_change_vec(conf, "major_changes")?;
+        let minor_changes = Config::parse_change_vec(conf, "major_changes")?;
+        let patch_changes = Config::parse_change_vec(conf, "major_changes")?;
+        let other_changes = Config::parse_change_vec(conf, "major_changes")?;
+        let generate_changelog = conf
+            .get(&Value::from("generate_changelog"))
+            .unwrap_or(&Value::from(true))
+            .as_bool()
+            .ok_or("Could not get generate_changelog.")?;
+        Ok((
+            String::from(release_branch),
+            major_changes,
+            minor_changes,
+            patch_changes,
+            other_changes,
+            generate_changelog,
+        ))
+    }
+
+    fn parse_change_vec(conf: &IndexMap<Value, Value>, key: &str) -> Result<ChangeList, Alert> {
+        let unpacked_value = conf
+            .get(&Value::from(key))
+            .ok_or("Could not parse value from change vector in config.")?;
+        let unpacked_vector = unpacked_value
+            .as_sequence()
+            .ok_or("Could not parse vector from change vector in config")?;
+        let mut changes = vec![];
+        for change_value in unpacked_vector.iter() {
+            let change = Change::from(change_value)?;
+            changes.push(change);
+        }
+        Ok(ChangeList::new(changes))
+    }
+}
