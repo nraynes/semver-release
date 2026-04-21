@@ -1,6 +1,6 @@
+pub mod auth;
 mod commit_all;
 mod get_commits;
-pub mod github;
 mod latest_tag;
 mod push;
 mod tag;

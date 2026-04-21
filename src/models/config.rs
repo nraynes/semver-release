@@ -1,5 +1,5 @@
 use crate::{
-    ChangeList, LogLevel,
+    ChangeList, LogLevel, git,
     models::{Alert, Change},
 };
 use indexmap::IndexMap;
@@ -15,6 +15,7 @@ pub struct Config {
     generate_changelog: bool,
     log_level: LogLevel,
     changelog_location: String,
+    git_auth_method: git::auth::Auth,
 }
 
 impl Config {
@@ -50,6 +51,10 @@ impl Config {
         &self.changelog_location
     }
 
+    pub fn git_auth_method(&self) -> &git::auth::Auth {
+        &self.git_auth_method
+    }
+
     pub fn load(yaml: Value) -> Result<Self, Alert> {
         let conf = Config::parse_yaml(yaml)?;
         Ok(Config {
@@ -61,6 +66,7 @@ impl Config {
             generate_changelog: conf.5,
             log_level: conf.6,
             changelog_location: conf.7,
+            git_auth_method: conf.8,
         })
     }
 
@@ -84,6 +90,7 @@ impl Config {
             bool,
             LogLevel,
             String,
+            git::auth::Auth,
         ),
         Alert,
     > {
@@ -118,6 +125,14 @@ impl Config {
             .unwrap_or(&default_changelog_location)
             .as_str()
             .ok_or("Could not get changelog_location.")?;
+        let git_auth_method_value = conf
+            .get(&Value::from("git_auth_method"))
+            .ok_or("Could not get git_auth_method.")?;
+        let git_auth_method_str = git_auth_method_value
+            .as_str()
+            .ok_or("git_auth_method invalid value.")?;
+        let git_auth_method = git::auth::Auth::from_str(git_auth_method_str)
+            .ok_or("Invalid value for git_auth_method.")?;
         Ok((
             String::from(release_branch),
             major_changes,
@@ -127,6 +142,7 @@ impl Config {
             generate_changelog,
             log_level,
             String::from(changelog_location),
+            git_auth_method,
         ))
     }
 

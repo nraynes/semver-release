@@ -16,3 +16,4 @@ other_changes:
 generate_changelog: true
 log_level: "debug"
 changelog_location: "CHANGELOG.md"
+git_auth_method: "github"

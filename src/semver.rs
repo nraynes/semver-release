@@ -1,12 +1,10 @@
 use indexmap::IndexMap;
 
-use crate::{
-    Alert, Changelog, Config, Env, Version, analyzer, git, log::Logger, parse_args, parse_vars,
-};
+use crate::{Alert, Changelog, Config, Version, analyzer, git, log::Logger, parse_args};
 
 pub struct SemVer {
     config: Config,
-    env: Env,
+    env: IndexMap<String, String>,
     logger: Logger,
 }
 
@@ -24,7 +22,7 @@ impl SemVer {
 
     pub fn init(args: Vec<String>, vars: IndexMap<String, String>) -> Result<Self, Alert> {
         let config_file_path: String = parse_args(args);
-        let env = parse_vars(vars)?;
+        let env = vars;
         let config = Config::load_from_file(config_file_path)?;
         let logger = Logger::new(config.log_level().clone());
         Ok(SemVer {
@@ -36,11 +34,7 @@ impl SemVer {
 
     pub fn release(&self) -> Result<(), Alert> {
         self.logger.info("Starting Release Cycle");
-        git::github::authenticate(
-            self.env.github_token(),
-            self.env.github_actor(),
-            self.env.github_repository(),
-        )?;
+        self.config.git_auth_method().authenticate(&self.env)?;
         let commits = git::get_commits(self.config.release_branch())?;
         let (current_major, current_minor, current_patch) = self.current_version();
         let version = analyzer::analyze_commits(
