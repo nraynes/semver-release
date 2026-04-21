@@ -2,8 +2,7 @@ use crate::{
     ChangeList, LogLevel, git,
     models::{Alert, Change},
 };
-use indexmap::IndexMap;
-use rust_yaml::{Value, Yaml};
+use serde_json::{self, Value, map::Map};
 use std::fs;
 
 pub struct Config {
@@ -55,8 +54,8 @@ impl Config {
         &self.git_auth_method
     }
 
-    pub fn load(yaml: Value) -> Result<Self, Alert> {
-        let conf = Config::parse_yaml(yaml)?;
+    pub fn load(config_contents: Value) -> Result<Self, Alert> {
+        let conf = Config::parse(config_contents)?;
         Ok(Config {
             release_branch: conf.0,
             major_changes: conf.1,
@@ -72,14 +71,13 @@ impl Config {
 
     pub fn load_from_file(file_path: String) -> Result<Self, Alert> {
         let config_file = fs::read_to_string(file_path)?;
-        let yaml = Yaml::new();
-        let config_contents = yaml.load_str(&config_file)?;
+        let config_contents = serde_json::from_str(&config_file)?;
         let config = Config::load(config_contents)?;
         Ok(config)
     }
 
-    fn parse_yaml(
-        yaml: Value,
+    fn parse(
+        config_content: Value,
     ) -> Result<
         (
             String,
@@ -94,45 +92,60 @@ impl Config {
         ),
         Alert,
     > {
-        let conf = yaml
-            .as_mapping()
-            .ok_or("Could not parse yaml from config file.")?;
+        // Parse the config.
+        let conf = config_content
+            .as_object()
+            .ok_or("Could not parse config.")?;
+
+        // Parse the release branch from global values. Default is the master branch.
         let master_branch = Value::from("release_branch");
         let release_branch = conf
-            .get(&Value::from("release_branch"))
+            .get("release_branch")
             .unwrap_or(&master_branch)
             .as_str()
             .ok_or("Could not get release_branch.")?;
+
+        // Parse the change lists.
         let major_changes = Config::parse_change_vec(conf, "major_changes")?;
-        let minor_changes = Config::parse_change_vec(conf, "major_changes")?;
-        let patch_changes = Config::parse_change_vec(conf, "major_changes")?;
-        let other_changes = Config::parse_change_vec(conf, "major_changes")?;
+        let minor_changes = Config::parse_change_vec(conf, "minor_changes")?;
+        let patch_changes = Config::parse_change_vec(conf, "patch_changes")?;
+        let other_changes = Config::parse_change_vec(conf, "other_changes")?;
+
+        // Parse changelog toggle.
         let generate_changelog = conf
-            .get(&Value::from("generate_changelog"))
+            .get("generate_changelog")
             .unwrap_or(&Value::from(true))
             .as_bool()
             .ok_or("Could not get generate_changelog.")?;
+
+        // Parse log level.
         let log_level = LogLevel::from_str(
-            conf.get(&Value::from("log_level"))
+            conf.get("log_level")
                 .unwrap_or(&Value::from("info"))
                 .as_str()
                 .ok_or("Could not get log_level.")?,
         )
         .ok_or("Not a valid value for LogLevel.")?;
+
+        // Parse changelog location. Default is CHANGELOG.md.
         let default_changelog_location = Value::from("CHANGELOG.md");
         let changelog_location = conf
-            .get(&Value::from("changelog_location"))
+            .get("changelog_location")
             .unwrap_or(&default_changelog_location)
             .as_str()
             .ok_or("Could not get changelog_location.")?;
+
+        // Parse the git authentication method.
         let git_auth_method_value = conf
-            .get(&Value::from("git_auth_method"))
+            .get("git_auth_method")
             .ok_or("Could not get git_auth_method.")?;
         let git_auth_method_str = git_auth_method_value
             .as_str()
             .ok_or("git_auth_method invalid value.")?;
         let git_auth_method = git::auth::Auth::from_str(git_auth_method_str)
             .ok_or("Invalid value for git_auth_method.")?;
+
+        // Return with all the values to instantiate a Config.
         Ok((
             String::from(release_branch),
             major_changes,
@@ -146,15 +159,15 @@ impl Config {
         ))
     }
 
-    fn parse_change_vec(conf: &IndexMap<Value, Value>, key: &str) -> Result<ChangeList, Alert> {
+    fn parse_change_vec(conf: &Map<String, Value>, key: &str) -> Result<ChangeList, Alert> {
         let unpacked_value = conf
-            .get(&Value::from(key))
+            .get(key)
             .ok_or("Could not parse value from change vector in config.")?;
-        let unpacked_vector = unpacked_value
-            .as_sequence()
+        let unpacked_mapping = unpacked_value
+            .as_array()
             .ok_or("Could not parse vector from change vector in config")?;
         let mut changes = vec![];
-        for change_value in unpacked_vector.iter() {
+        for change_value in unpacked_mapping.iter() {
             let change = Change::from(change_value)?;
             changes.push(change);
         }

@@ -33,7 +33,7 @@ impl SemVer {
     }
 
     pub fn release(&self) -> Result<(), Alert> {
-        self.logger.info("Starting Release Cycle");
+        // self.logger.info("Starting Release Cycle");
         self.config.git_auth_method().authenticate(&self.env)?;
         let commits = git::get_commits(self.config.release_branch())?;
         let (current_major, current_minor, current_patch) = self.current_version();

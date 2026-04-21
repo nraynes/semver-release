@@ -1,5 +1,5 @@
 use regex::Regex;
-use rust_yaml::Value;
+use serde_json::Value;
 
 use crate::models::{Alert, Commit};
 
@@ -16,13 +16,13 @@ impl Change {
 
     pub fn from(value: &Value) -> Result<Self, Alert> {
         let change_map = value
-            .as_mapping()
+            .as_object()
             .ok_or("Change could not be parsed from config. Check syntax.")?;
         let packaged_pattern = change_map
-            .get(&Value::from("pattern"))
+            .get("pattern")
             .ok_or("No pattern found in change declaration in config.")?;
         let packaged_kind = change_map
-            .get(&Value::from("pattern"))
+            .get("kind")
             .ok_or("No kind found in change declaration in config.")?;
         let pattern_string = packaged_pattern
             .as_str()

@@ -1,6 +1,6 @@
 use chrono;
 use regex;
-use rust_yaml;
+use serde_json;
 use std::{convert::From, fmt::Display, io, num, string};
 
 #[derive(Debug, Clone)]
@@ -40,10 +40,10 @@ impl From<num::ParseIntError> for Alert {
     }
 }
 
-impl From<rust_yaml::Error> for Alert {
-    fn from(value: rust_yaml::Error) -> Self {
+impl From<serde_json::Error> for Alert {
+    fn from(value: serde_json::Error) -> Self {
         Alert {
-            val: format!("rust_yaml::Error: {}", value),
+            val: format!("serde_json::Error: {}", value),
         }
     }
 }
