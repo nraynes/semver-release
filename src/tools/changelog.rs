@@ -6,7 +6,7 @@ pub struct Changelog {
 }
 
 impl Changelog {
-    pub fn generate(version: Version) -> Self {
+    pub fn generate(version: &Version) -> Self {
         Changelog {
             text: format!("{}\n\n{}", version.get(), version.changes()),
         }

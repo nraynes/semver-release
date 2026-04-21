@@ -1,7 +1,12 @@
-use crate::{Alert, Changelog, Config, Version, analyzer, git, log::Logger, parse_args};
+use indexmap::IndexMap;
+
+use crate::{
+    Alert, Changelog, Config, Env, Version, analyzer, git, log::Logger, parse_args, parse_vars,
+};
 
 pub struct SemVer {
     config: Config,
+    env: Env,
     logger: Logger,
 }
 
@@ -17,14 +22,25 @@ impl SemVer {
         }
     }
 
-    pub fn init(args: Vec<String>) -> Result<Self, Alert> {
+    pub fn init(args: Vec<String>, vars: IndexMap<String, String>) -> Result<Self, Alert> {
         let config_file_path: String = parse_args(args);
+        let env = parse_vars(vars)?;
         let config = Config::load_from_file(config_file_path)?;
         let logger = Logger::new(config.log_level().clone());
-        Ok(SemVer { config, logger })
+        Ok(SemVer {
+            config,
+            env,
+            logger,
+        })
     }
 
     pub fn release(&self) -> Result<(), Alert> {
+        self.logger.info("Starting Release Cycle");
+        git::github::authenticate(
+            self.env.github_token(),
+            self.env.github_actor(),
+            self.env.github_repository(),
+        )?;
         let commits = git::get_commits(self.config.release_branch())?;
         let (current_major, current_minor, current_patch) = self.current_version();
         let version = analyzer::analyze_commits(
@@ -38,8 +54,12 @@ impl SemVer {
             current_patch,
         )?;
         git::tag(&version.get(), "SemVer-Release")?;
-        let changelog = Changelog::generate(version);
-        changelog.save(self.config.changelog_location())?;
+        if *self.config.generate_changelog() {
+            let changelog = Changelog::generate(&version);
+            changelog.save(self.config.changelog_location())?;
+        }
+        git::commit_all(&format!("semver_release_version_update {}", version.get()))?;
+        git::push()?;
         Ok(())
     }
 }
