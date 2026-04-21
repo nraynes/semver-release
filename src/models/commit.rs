@@ -26,7 +26,7 @@ impl Display for Commit {
 }
 
 impl Commit {
-    pub fn new(id: &str, author: &str, timestamp: DateTime<FixedOffset>, message: &str) -> Commit {
+    pub fn new(id: &str, author: &str, timestamp: DateTime<FixedOffset>, message: &str) -> Self {
         Commit {
             id: id.to_string(),
             author: author.to_string(),
@@ -40,12 +40,12 @@ impl Commit {
         author: &str,
         timestamp: &str,
         message: &str,
-    ) -> Result<Commit, Alert> {
+    ) -> Result<Self, Alert> {
         let parsed_timestamp = DateTime::parse_from_str(timestamp, COMMIT_TIME_FORMAT)?;
         Ok(Commit::new(id, author, parsed_timestamp, message))
     }
 
-    pub fn new_from_commit(commit: String) -> Result<Commit, Alert> {
+    pub fn new_from_commit(commit: String) -> Result<Self, Alert> {
         let lines: Vec<&str> = commit.split("\n").collect();
         if lines.len() > 3 {
             let id_line: (&str, &str) = lines[0].split_once(" ").unwrap_or((lines[0], ""));

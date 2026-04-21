@@ -7,7 +7,7 @@ pub struct CommitMap {
 }
 
 impl CommitMap {
-    pub fn new() -> CommitMap {
+    pub fn new() -> Self {
         CommitMap {
             map: IndexMap::new(),
         }

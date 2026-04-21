@@ -1,5 +1,5 @@
 use crate::{
-    ChangeList,
+    ChangeList, LogLevel,
     models::{Alert, Change},
 };
 use indexmap::IndexMap;
@@ -13,6 +13,7 @@ pub struct Config {
     patch_changes: ChangeList,
     other_changes: ChangeList,
     generate_changelog: bool,
+    log_level: LogLevel,
 }
 
 impl Config {
@@ -40,7 +41,11 @@ impl Config {
         &self.generate_changelog
     }
 
-    pub fn load(yaml: Value) -> Result<Config, Alert> {
+    pub fn log_level(&self) -> &LogLevel {
+        &self.log_level
+    }
+
+    pub fn load(yaml: Value) -> Result<Self, Alert> {
         let conf = Config::parse_yaml(yaml)?;
         Ok(Config {
             release_branch: conf.0,
@@ -49,10 +54,11 @@ impl Config {
             patch_changes: conf.3,
             other_changes: conf.4,
             generate_changelog: conf.5,
+            log_level: conf.6,
         })
     }
 
-    pub fn load_from_file(file_path: String) -> Result<Config, Alert> {
+    pub fn load_from_file(file_path: String) -> Result<Self, Alert> {
         let config_file = fs::read_to_string(file_path)?;
         let yaml = Yaml::new();
         let config_contents = yaml.load_str(&config_file)?;
@@ -62,7 +68,18 @@ impl Config {
 
     fn parse_yaml(
         yaml: Value,
-    ) -> Result<(String, ChangeList, ChangeList, ChangeList, ChangeList, bool), Alert> {
+    ) -> Result<
+        (
+            String,
+            ChangeList,
+            ChangeList,
+            ChangeList,
+            ChangeList,
+            bool,
+            LogLevel,
+        ),
+        Alert,
+    > {
         let conf = yaml
             .as_mapping()
             .ok_or("Could not parse yaml from config file.")?;
@@ -81,6 +98,13 @@ impl Config {
             .unwrap_or(&Value::from(true))
             .as_bool()
             .ok_or("Could not get generate_changelog.")?;
+        let log_level = LogLevel::from_str(
+            conf.get(&Value::from("log_level"))
+                .unwrap_or(&Value::from("info"))
+                .as_str()
+                .ok_or("Could not get log_level.")?,
+        )
+        .ok_or("Not a valid value for LogLevel.")?;
         Ok((
             String::from(release_branch),
             major_changes,
@@ -88,6 +112,7 @@ impl Config {
             patch_changes,
             other_changes,
             generate_changelog,
+            log_level,
         ))
     }
 

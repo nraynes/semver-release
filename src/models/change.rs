@@ -14,7 +14,7 @@ impl Change {
         &self.kind
     }
 
-    pub fn from(value: &Value) -> Result<Change, Alert> {
+    pub fn from(value: &Value) -> Result<Self, Alert> {
         let change_map = value
             .as_mapping()
             .ok_or("Change could not be parsed from config. Check syntax.")?;

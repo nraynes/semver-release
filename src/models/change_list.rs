@@ -5,7 +5,7 @@ pub struct ChangeList {
 }
 
 impl ChangeList {
-    pub fn new(changes: Vec<Change>) -> ChangeList {
+    pub fn new(changes: Vec<Change>) -> Self {
         ChangeList { changes }
     }
 

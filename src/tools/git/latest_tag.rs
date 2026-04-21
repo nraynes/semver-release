@@ -1,10 +1,9 @@
 use std::process::Command;
 
-use crate::Alert;
-
-pub fn latest_tag() -> Result<String, Alert> {
+pub fn latest_tag() -> Option<String> {
     let command_output = Command::new("git")
         .args(&["describe", "--abbrev=0", "--tags"])
-        .output()?;
-    Ok(String::from_utf8(command_output.stdout)?)
+        .output()
+        .ok()?;
+    Some(String::from_utf8(command_output.stdout).ok()?)
 }

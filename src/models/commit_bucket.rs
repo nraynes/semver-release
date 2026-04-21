@@ -14,7 +14,7 @@ impl CommitBucket {
         &self.commits
     }
 
-    pub fn new(kind: String) -> CommitBucket {
+    pub fn new(kind: String) -> Self {
         CommitBucket {
             kind,
             commits: vec![],
