@@ -14,6 +14,7 @@ pub struct Config {
     other_changes: ChangeList,
     generate_changelog: bool,
     log_level: LogLevel,
+    changelog_location: String,
 }
 
 impl Config {
@@ -45,6 +46,10 @@ impl Config {
         &self.log_level
     }
 
+    pub fn changelog_location(&self) -> &str {
+        &self.changelog_location
+    }
+
     pub fn load(yaml: Value) -> Result<Self, Alert> {
         let conf = Config::parse_yaml(yaml)?;
         Ok(Config {
@@ -55,6 +60,7 @@ impl Config {
             other_changes: conf.4,
             generate_changelog: conf.5,
             log_level: conf.6,
+            changelog_location: conf.7,
         })
     }
 
@@ -77,6 +83,7 @@ impl Config {
             ChangeList,
             bool,
             LogLevel,
+            String,
         ),
         Alert,
     > {
@@ -105,6 +112,12 @@ impl Config {
                 .ok_or("Could not get log_level.")?,
         )
         .ok_or("Not a valid value for LogLevel.")?;
+        let default_changelog_location = Value::from("CHANGELOG.md");
+        let changelog_location = conf
+            .get(&Value::from("changelog_location"))
+            .unwrap_or(&default_changelog_location)
+            .as_str()
+            .ok_or("Could not get changelog_location.")?;
         Ok((
             String::from(release_branch),
             major_changes,
@@ -113,6 +126,7 @@ impl Config {
             other_changes,
             generate_changelog,
             log_level,
+            String::from(changelog_location),
         ))
     }
 

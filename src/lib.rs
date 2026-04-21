@@ -13,6 +13,7 @@ pub use models::Config;
 pub use models::LogLevel;
 pub use models::Version;
 pub use semver::SemVer;
+pub use tools::Changelog;
 pub use tools::analyzer;
 pub use tools::git;
 pub use tools::log;

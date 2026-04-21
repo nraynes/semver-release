@@ -1,4 +1,4 @@
-use crate::{Alert, Config, Version, analyzer, git, log::Logger, parse_args};
+use crate::{Alert, Changelog, Config, Version, analyzer, git, log::Logger, parse_args};
 
 pub struct SemVer {
     config: Config,
@@ -38,6 +38,8 @@ impl SemVer {
             current_patch,
         )?;
         git::tag(&version.get(), "SemVer-Release")?;
+        let changelog = Changelog::generate(version);
+        changelog.save(self.config.changelog_location())?;
         Ok(())
     }
 }

@@ -14,18 +14,27 @@ pub struct Commit {
 
 impl Display for Commit {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "commit: {}\nAuthor: {}\nDate: {}\n\n{}\n",
-            self.id,
-            self.author,
-            self.timestamp.to_string(),
-            self.message
-        )
+        write!(f, "{}\n", self.message)
     }
 }
 
 impl Commit {
+    pub fn id(&self) -> &str {
+        &self.id
+    }
+
+    pub fn author(&self) -> &str {
+        &self.author
+    }
+
+    pub fn timestamp(&self) -> &DateTime<FixedOffset> {
+        &self.timestamp
+    }
+
+    pub fn message(&self) -> &str {
+        &self.message
+    }
+
     pub fn new(id: &str, author: &str, timestamp: DateTime<FixedOffset>, message: &str) -> Self {
         Commit {
             id: id.to_string(),

@@ -1,9 +1,20 @@
+use std::fmt::Display;
+
 use indexmap::IndexMap;
 
 use crate::{Alert, Commit, CommitBucket};
 
 pub struct CommitMap {
     map: IndexMap<String, CommitBucket>,
+}
+
+impl Display for CommitMap {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for bucket in self.map.values().into_iter() {
+            write!(f, "{}\n", bucket)?;
+        }
+        Ok(())
+    }
 }
 
 impl CommitMap {
