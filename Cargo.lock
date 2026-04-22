@@ -187,6 +187,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "r_log"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf32614575bfeff37a816a5a168e8bf417999930757b2b1be3784fa6e968398e"
+
+[[package]]
 name = "regex"
 version = "1.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -227,6 +233,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "indexmap",
+ "r_log",
  "regex",
  "serde_json",
 ]

@@ -1,6 +1,6 @@
+use crate::{Alert, Changelog, Config, Version, analyzer, git, parse_args};
 use indexmap::IndexMap;
-
-use crate::{Alert, Changelog, Config, Version, analyzer, git, log::Logger, parse_args};
+use r_log::Logger;
 
 pub struct SemVer {
     config: Config,

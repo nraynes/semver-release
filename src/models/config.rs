@@ -1,7 +1,8 @@
 use crate::{
-    ChangeList, LogLevel, git,
+    ChangeList, git,
     models::{Alert, Change},
 };
+use r_log::LogLevel;
 use serde_json::{self, Value, map::Map};
 use std::fs;
 

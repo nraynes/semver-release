@@ -5,7 +5,6 @@ mod commit;
 mod commit_bucket;
 mod commit_map;
 mod config;
-mod log_level;
 mod version;
 
 pub use alert::Alert;
@@ -15,5 +14,4 @@ pub use commit::Commit;
 pub use commit_bucket::CommitBucket;
 pub use commit_map::CommitMap;
 pub use config::Config;
-pub use log_level::LogLevel;
 pub use version::Version;
