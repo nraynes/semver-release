@@ -11,7 +11,7 @@ impl Display for CommitBucket {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "## {}\n\n", self.kind)?;
         for commit in self.commits.iter() {
-            write!(f, "    {}\n", commit)?;
+            write!(f, "- {}", commit)?;
         }
         Ok(())
     }
@@ -26,14 +26,49 @@ impl CommitBucket {
         &self.commits
     }
 
-    pub fn new(kind: String) -> Self {
+    pub fn new(kind: &str) -> Self {
         CommitBucket {
-            kind,
+            kind: String::from(kind),
             commits: vec![],
         }
     }
 
     pub fn add(&mut self, commit: Commit) {
         self.commits.push(commit)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::mock::mock_commit;
+
+    use super::*;
+
+    #[test]
+    fn test_commitbucket_add() {
+        let mut bucket = CommitBucket::new("Feature");
+        let commit_one = mock_commit("feat: this is a test one");
+        let commit_two = mock_commit("feat: this is a test two");
+        bucket.add(commit_one);
+        bucket.add(commit_two);
+
+        assert_eq!(bucket.kind(), "Feature");
+        assert_eq!(bucket.commits()[0].message(), "feat: this is a test one");
+        assert_eq!(bucket.commits()[1].message(), "feat: this is a test two");
+    }
+
+    #[test]
+    fn test_commitbucket_fmt() {
+        let mut bucket = CommitBucket::new("Feature");
+        let commit_one = mock_commit("feat: this is a test one");
+        let commit_two = mock_commit("feat: this is a test two");
+        bucket.add(commit_one);
+        bucket.add(commit_two);
+
+        let displayed = format!("{}", bucket);
+        assert_eq!(
+            &displayed,
+            "## Feature\n\n- feat: this is a test one\n- feat: this is a test two\n"
+        );
     }
 }

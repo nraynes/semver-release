@@ -37,3 +37,28 @@ impl Version {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_version_parse_valid() {
+        let parse_value = Version::parse("v1.9.2");
+        assert_eq!(parse_value, Some((1, 9, 2)));
+    }
+
+    #[test]
+    fn test_version_parse_invalid() {
+        let parse_value = Version::parse("oopasdf91.9.2ff");
+        assert_eq!(parse_value, None);
+    }
+
+    #[test]
+    fn test_version_get() {
+        let (major, minor, patch) = Version::parse("v1.9.2").unwrap();
+        let changes = CommitMap::new();
+        let version = Version::new(major, minor, patch, changes);
+        assert_eq!(version.get(), "v1.9.2");
+    }
+}

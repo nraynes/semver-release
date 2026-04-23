@@ -3,10 +3,20 @@ use serde_json::Value;
 
 use crate::models::{Alert, Commit};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Change {
     pattern: Regex,
     kind: String,
+}
+
+impl PartialEq for Change {
+    fn eq(&self, other: &Self) -> bool {
+        self.pattern.as_str() == other.pattern.as_str() && self.kind == other.kind
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
 }
 
 impl Change {
@@ -39,5 +49,62 @@ impl Change {
 
     pub fn check(&self, commit: &Commit) -> bool {
         self.pattern.is_match(commit.msg())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use serde_json::json;
+
+    use crate::{
+        Change,
+        mock::{mock_change, mock_commit},
+    };
+
+    #[test]
+    fn test_change_new_valid() {
+        let change = Change::from(&json!({
+            "pattern": "^test.*$",
+            "kind": "TEST"
+        }));
+        assert_eq!(change.is_ok(), true);
+    }
+
+    #[test]
+    fn test_change_new_invalid() {
+        let change = Change::from(&json!(["Invalid", { "JSON_KEY": 334 }]));
+        assert_eq!(change.is_ok(), false);
+    }
+
+    #[test]
+    fn test_change_check_pattern_match_one() {
+        let change = mock_change("^feat(\n|.)*$", "Feature");
+        let commit = mock_commit("feat(super): the message header");
+        let check = change.check(&commit);
+        assert_eq!(check, true);
+    }
+
+    #[test]
+    fn test_change_check_pattern_match_two() {
+        let change = mock_change("^fix(\n|.)*$", "Fix");
+        let commit = mock_commit("fix(super): the message header");
+        let check = change.check(&commit);
+        assert_eq!(check, true);
+    }
+
+    #[test]
+    fn test_change_check_pattern_not_match_one() {
+        let change = mock_change("^fix(\n|.)*$", "Fix");
+        let commit = mock_commit("feat(super): the message header");
+        let check = change.check(&commit);
+        assert_eq!(check, false);
+    }
+
+    #[test]
+    fn test_change_check_pattern_not_match_two() {
+        let change = mock_change("^feat(\n|.)*$", "Feature");
+        let commit = mock_commit("fix(super): the message header");
+        let check = change.check(&commit);
+        assert_eq!(check, false);
     }
 }

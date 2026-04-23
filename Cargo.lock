@@ -188,9 +188,9 @@ dependencies = [
 
 [[package]]
 name = "r_log"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf32614575bfeff37a816a5a168e8bf417999930757b2b1be3784fa6e968398e"
+checksum = "2c54c1749b7d5cd9780364a50294a102ced6183482c84b01e27d93511a5f50a4"
 
 [[package]]
 name = "regex"

@@ -4,6 +4,7 @@ use indexmap::IndexMap;
 
 use crate::Alert;
 
+#[derive(PartialEq, Debug)]
 pub enum Auth {
     GITHUB,
 }

@@ -43,3 +43,11 @@ pub fn analyze_commits(
     }
     Ok(Version::new(major, minor, patch, changes))
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_analyze_commits_valid() {}
+}
