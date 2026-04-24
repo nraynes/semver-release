@@ -4,12 +4,22 @@ use std::fmt::{self, Display, Formatter};
 
 const COMMIT_TIME_FORMAT: &str = "%a %b %d %H:%M:%S %Y %z";
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Commit {
     id: String,
     author: String,
     timestamp: DateTime<FixedOffset>,
     message: String,
+}
+
+impl PartialEq for Commit {
+    fn eq(&self, other: &Self) -> bool {
+        self.message == other.message
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        self.message != other.message
+    }
 }
 
 impl Display for Commit {

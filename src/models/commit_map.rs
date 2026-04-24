@@ -24,6 +24,10 @@ impl CommitMap {
         }
     }
 
+    pub fn bucket(&self, key: &str) -> Option<&CommitBucket> {
+        self.map.get(key)
+    }
+
     pub fn insert(&mut self, key: &str, value: Commit) -> Result<(), Alert> {
         if !self.map.contains_key(key) {
             self.map.insert(String::from(key), CommitBucket::new(key));

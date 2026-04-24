@@ -7,6 +7,24 @@ pub struct CommitBucket {
     commits: Vec<Commit>,
 }
 
+impl PartialEq for CommitBucket {
+    fn eq(&self, other: &Self) -> bool {
+        if self.commits.len() != other.commits.len() {
+            return false;
+        }
+        for i in 0..self.commits.len() {
+            if self.commits[i] != other.commits[i] {
+                return false;
+            }
+        }
+        true
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
 impl Display for CommitBucket {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "## {}\n\n", self.kind)?;
