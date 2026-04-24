@@ -1,5 +1,6 @@
 use crate::{Change, Commit};
 
+/// Represents a list of change formats to use while analyzing commits.
 #[derive(Debug)]
 pub struct ChangeList {
     changes: Vec<Change>,
@@ -28,6 +29,25 @@ impl ChangeList {
         ChangeList { changes }
     }
 
+    /// Checks a commit to see if it matches any of the changes in this list and returns the
+    /// kind of change it matched.
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// # use semver_release::{Commit, Change, ChangeList};
+    /// # use serde_json::json;
+    /// # use chrono::DateTime;
+    ///
+    /// let major_changes = ChangeList::new(vec![
+    ///       Change::from(&json!({
+    ///           "pattern": "^(.|\n)*BREAKING CHANGE(.|\n)*$",
+    ///           "kind": "BREAKING CHANGES"})).unwrap()
+    /// ]);
+    /// let commit = Commit::new("12345678", "John Doe", DateTime::parse_from_str("Wed Apr 22 19:12:34 2026 -0400", "%a %b %d %H:%M:%S %Y %z").unwrap(), "feat: some commit one\n\nBREAKING CHANGE: this will break the current version.");
+    ///
+    /// assert_eq!(major_changes.check(&commit), Some(String::from("BREAKING CHANGES")));
+    /// ```
     pub fn check(&self, commit: &Commit) -> Option<String> {
         for change in self.changes.iter() {
             if change.check(commit) {

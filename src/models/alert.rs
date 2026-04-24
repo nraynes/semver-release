@@ -3,6 +3,8 @@ use regex;
 use serde_json;
 use std::{convert::From, fmt::Display, io, num, string};
 
+/// Alert is a wrapper for all the various error types that may be returned by various
+/// crate functions.
 #[derive(Debug, Clone)]
 pub struct Alert {
     val: String,

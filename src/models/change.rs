@@ -3,6 +3,7 @@ use serde_json::Value;
 
 use crate::models::{Alert, Commit};
 
+/// A pattern that represents a type of change based on a commit message.
 #[derive(Clone, Debug)]
 pub struct Change {
     pattern: Regex,
@@ -24,6 +25,16 @@ impl Change {
         &self.kind
     }
 
+    /// Returns a new Change object when supplied with valid parsed json.
+    ///
+    /// # Valid JSON
+    ///
+    /// ```markdown
+    /// {
+    ///     "pattern": "^chore(.|\n)*$",
+    ///     "kind": "Maintenance Items"
+    /// }
+    /// ```
     pub fn from(value: &Value) -> Result<Self, Alert> {
         let change_map = value
             .as_object()
@@ -47,6 +58,23 @@ impl Change {
         })
     }
 
+    /// Checks a commit to see if it matches this change pattern.
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// # use semver_release::{Commit, Change, ChangeList};
+    /// # use serde_json::json;
+    /// # use chrono::DateTime;
+    ///
+    /// let change = Change::from(&json!({
+    ///     "pattern": "^(.|\n)*BREAKING CHANGE(.|\n)*$",
+    ///     "kind": "BREAKING CHANGES"
+    /// })).unwrap();
+    /// let commit = Commit::new("12345678", "John Doe", DateTime::parse_from_str("Wed Apr 22 19:12:34 2026 -0400", "%a %b %d %H:%M:%S %Y %z").unwrap(), "feat: some commit one\n\nBREAKING CHANGE: this will break the current version.");
+    ///
+    /// assert_eq!(change.check(&commit), true);
+    /// ```
     pub fn check(&self, commit: &Commit) -> bool {
         self.pattern.is_match(commit.msg())
     }

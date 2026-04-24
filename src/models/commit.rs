@@ -54,6 +54,7 @@ impl Commit {
         }
     }
 
+    /// Creates a new Commit object after converting string for timestamp to a DateTime.
     pub fn new_from_str(
         id: &str,
         author: &str,
@@ -64,6 +65,32 @@ impl Commit {
         Ok(Commit::new(id, author, parsed_timestamp, message))
     }
 
+    /// Creates a new Commit object from a standard commit in text format from "git log" output.
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// use semver_release::Commit;
+    /// use chrono::DateTime;
+    ///
+    /// let c = String::from(
+    ///             "490049bf36b19b30d23b4be5a4u94f71b5c6475c
+    /// Author: Some Author <myemail@email.com>
+    /// Date:   Tue Apr 14 17:35:15 2026 -0400
+    ///
+    ///     feat: added feature to get commit list
+    /// ",
+    /// );
+    /// let commit =
+    ///     Commit::new_from_commit(c).expect("Commit could not be instantiated during test.");
+    /// assert_eq!(commit.id(), "490049bf36b19b30d23b4be5a4u94f71b5c6475c");
+    /// assert_eq!(commit.author(), "Some Author <myemail@email.com>");
+    /// assert_eq!(
+    ///     commit.timestamp(),
+    ///     &DateTime::parse_from_str("Tue Apr 14 17:35:15 2026 -0400", "%a %b %d %H:%M:%S %Y %z").unwrap()
+    /// );
+    /// assert_eq!(commit.message(), "feat: added feature to get commit list");
+    /// ```
     pub fn new_from_commit(commit: String) -> Result<Self, Alert> {
         let lines: Vec<&str> = commit.split("\n").collect();
         if lines.len() > 3 {

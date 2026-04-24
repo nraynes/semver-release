@@ -2,6 +2,9 @@ use std::fmt::Display;
 
 use crate::Commit;
 
+/// A container for a kind of change pattern that represents a commit that matches said pattern,
+/// as well as a vector of Commit objects that match the pattern for that kind of change.
+#[derive(Debug)]
 pub struct CommitBucket {
     kind: String,
     commits: Vec<Commit>,
@@ -9,7 +12,7 @@ pub struct CommitBucket {
 
 impl PartialEq for CommitBucket {
     fn eq(&self, other: &Self) -> bool {
-        if self.commits.len() != other.commits.len() {
+        if self.commits.len() != other.commits.len() || self.kind != other.kind {
             return false;
         }
         for i in 0..self.commits.len() {
