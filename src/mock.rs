@@ -4,16 +4,13 @@ mod mock_commit;
 mod mock_commit_map;
 mod mock_version;
 
-pub use mock_change::mock_change;
+#[cfg(test)]
+pub mod objects {
+    use super::*;
 
-#[allow(unused_imports)]
-pub use mock_changelist::mock_changelist;
-
-#[allow(unused_imports)]
-pub use mock_commit::mock_commit;
-
-#[allow(unused_imports)]
-pub use mock_version::mock_version;
-
-#[allow(unused_imports)]
-pub use mock_commit_map::mock_commit_map;
+    pub use mock_change::change;
+    pub use mock_changelist::changelist;
+    pub use mock_commit::commit;
+    pub use mock_commit_map::commit_map;
+    pub use mock_version::version;
+}

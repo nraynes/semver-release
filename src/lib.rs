@@ -17,3 +17,10 @@ pub use tools::Changelog;
 pub use tools::analyzer;
 pub use tools::git;
 pub use utils::parse_args;
+
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+
+    pub use mock::objects as mock;
+}

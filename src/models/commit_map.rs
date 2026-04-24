@@ -39,14 +39,14 @@ impl CommitMap {
 
 #[cfg(test)]
 mod test {
-    use crate::mock::mock_commit;
+    use crate::tests::mock;
 
     use super::*;
 
     #[test]
     fn test_commitmap_insert() {
         let mut commit_map = CommitMap::new();
-        let commit_one = mock_commit("feat(scope): a test header");
+        let commit_one = mock::commit::create("feat(scope): a test header");
         let result = commit_map.insert("Feature", commit_one);
         assert_eq!(result.is_ok(), true);
     }
@@ -54,9 +54,9 @@ mod test {
     #[test]
     fn test_commitmap_fmt() {
         let mut commit_map = CommitMap::new();
-        let commit_one = mock_commit("feat(scope): a test header");
-        let commit_two = mock_commit("feat(scope): a test header two");
-        let commit_three = mock_commit("fix(scope): a test header three");
+        let commit_one = mock::commit::create("feat(scope): a test header");
+        let commit_two = mock::commit::create("feat(scope): a test header two");
+        let commit_three = mock::commit::create("fix(scope): a test header three");
         commit_map.insert("Feature", commit_one).unwrap();
         commit_map.insert("Feature", commit_two).unwrap();
         commit_map.insert("Fix", commit_three).unwrap();

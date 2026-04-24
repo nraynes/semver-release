@@ -1,11 +1,13 @@
-use crate::Change;
-use serde_json::json;
+#[cfg(test)]
+pub mod change {
+    use crate::Change;
+    use serde_json::json;
 
-#[allow(dead_code)]
-pub fn mock_change(pattern: &str, kind: &str) -> Change {
-    Change::from(&json!({
-        "pattern": pattern,
-        "kind": kind
-    }))
-    .unwrap()
+    pub fn create(pattern: &str, kind: &str) -> Change {
+        Change::from(&json!({
+            "pattern": pattern,
+            "kind": kind
+        }))
+        .unwrap()
+    }
 }

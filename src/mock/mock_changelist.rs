@@ -1,9 +1,11 @@
-use crate::{ChangeList, mock::mock_change};
+#[cfg(test)]
+pub mod changelist {
+    use crate::{ChangeList, tests::mock};
 
-#[allow(dead_code)]
-pub fn mock_changelist() -> ChangeList {
-    ChangeList::new(vec![
-        mock_change("^feat(\n|.)*$", "Feature"),
-        mock_change("^fix(\n|.)*$", "Fix"),
-    ])
+    pub fn create() -> ChangeList {
+        ChangeList::new(vec![
+            mock::change::create("^feat(\n|.)*$", "Feature"),
+            mock::change::create("^fix(\n|.)*$", "Fix"),
+        ])
+    }
 }

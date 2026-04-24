@@ -40,15 +40,15 @@ impl CommitBucket {
 
 #[cfg(test)]
 mod test {
-    use crate::mock::mock_commit;
+    use crate::tests::mock;
 
     use super::*;
 
     #[test]
     fn test_commitbucket_add() {
         let mut bucket = CommitBucket::new("Feature");
-        let commit_one = mock_commit("feat: this is a test one");
-        let commit_two = mock_commit("feat: this is a test two");
+        let commit_one = mock::commit::create("feat: this is a test one");
+        let commit_two = mock::commit::create("feat: this is a test two");
         bucket.add(commit_one);
         bucket.add(commit_two);
 
@@ -60,8 +60,8 @@ mod test {
     #[test]
     fn test_commitbucket_fmt() {
         let mut bucket = CommitBucket::new("Feature");
-        let commit_one = mock_commit("feat: this is a test one");
-        let commit_two = mock_commit("feat: this is a test two");
+        let commit_one = mock::commit::create("feat: this is a test one");
+        let commit_two = mock::commit::create("feat: this is a test two");
         bucket.add(commit_one);
         bucket.add(commit_two);
 

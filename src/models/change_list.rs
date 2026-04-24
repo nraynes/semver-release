@@ -40,37 +40,36 @@ impl ChangeList {
 
 #[cfg(test)]
 mod test {
-    use crate::mock::mock_changelist;
-    use crate::mock::mock_commit;
+    use crate::tests::mock;
 
     #[test]
     fn test_changelist_check_pattern_match_one() {
-        let changelist = mock_changelist();
-        let commit = mock_commit("feat(some_scope): the commit message");
+        let changelist = mock::changelist::create();
+        let commit = mock::commit::create("feat(some_scope): the commit message");
         let check = changelist.check(&commit);
         assert_eq!(check, Some(String::from("Feature")));
     }
 
     #[test]
     fn test_changelist_check_pattern_match_two() {
-        let changelist = mock_changelist();
-        let commit = mock_commit("fix(some_scope): the commit message");
+        let changelist = mock::changelist::create();
+        let commit = mock::commit::create("fix(some_scope): the commit message");
         let check = changelist.check(&commit);
         assert_eq!(check, Some(String::from("Fix")));
     }
 
     #[test]
     fn test_changelist_check_pattern_not_match_one() {
-        let changelist = mock_changelist();
-        let commit = mock_commit("chore: this is a chore");
+        let changelist = mock::changelist::create();
+        let commit = mock::commit::create("chore: this is a chore");
         let check = changelist.check(&commit);
         assert_eq!(check, None);
     }
 
     #[test]
     fn test_changelist_check_pattern_not_match_two() {
-        let changelist = mock_changelist();
-        let commit = mock_commit("docs(readme): a test readme message");
+        let changelist = mock::changelist::create();
+        let commit = mock::commit::create("docs(readme): a test readme message");
         let check = changelist.check(&commit);
         assert_eq!(check, None);
     }

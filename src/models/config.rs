@@ -180,7 +180,7 @@ impl Config {
 mod test {
     use serde_json::json;
 
-    use crate::{git::auth::Auth, mock::mock_change};
+    use crate::{git::auth::Auth, tests::mock};
 
     use super::*;
 
@@ -235,24 +235,24 @@ mod test {
         assert_eq!(release_branch, "feature_branch");
         assert_eq!(
             major_changes,
-            ChangeList::new(vec![mock_change(
+            ChangeList::new(vec![mock::change::create(
                 "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
                 "BREAKING CHANGES"
             )])
         );
         assert_eq!(
             minor_changes,
-            ChangeList::new(vec![mock_change("^feat(.|\n)*$", "Features")])
+            ChangeList::new(vec![mock::change::create("^feat(.|\n)*$", "Features")])
         );
         assert_eq!(
             patch_changes,
-            ChangeList::new(vec![mock_change("^fix(.|\n)*$", "Patches")])
+            ChangeList::new(vec![mock::change::create("^fix(.|\n)*$", "Patches")])
         );
         assert_eq!(
             other_changes,
             ChangeList::new(vec![
-                mock_change("^chore(.|\n)*$", "Maintenance Items"),
-                mock_change("^docs(.|\n)*$", "Documentation")
+                mock::change::create("^chore(.|\n)*$", "Maintenance Items"),
+                mock::change::create("^docs(.|\n)*$", "Documentation")
             ])
         );
         assert_eq!(generate_changelog, false);
@@ -311,24 +311,24 @@ mod test {
         assert_eq!(release_branch, "feature_branch");
         assert_eq!(
             major_changes,
-            ChangeList::new(vec![mock_change(
+            ChangeList::new(vec![mock::change::create(
                 "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
                 "BREAKING CHANGES"
             )])
         );
         assert_eq!(
             minor_changes,
-            ChangeList::new(vec![mock_change("^feat(.|\n)*$", "Features")])
+            ChangeList::new(vec![mock::change::create("^feat(.|\n)*$", "Features")])
         );
         assert_eq!(
             patch_changes,
-            ChangeList::new(vec![mock_change("^fix(.|\n)*$", "Patches")])
+            ChangeList::new(vec![mock::change::create("^fix(.|\n)*$", "Patches")])
         );
         assert_eq!(
             other_changes,
             ChangeList::new(vec![
-                mock_change("^chore(.|\n)*$", "Maintenance Items"),
-                mock_change("^docs(.|\n)*$", "Documentation")
+                mock::change::create("^chore(.|\n)*$", "Maintenance Items"),
+                mock::change::create("^docs(.|\n)*$", "Documentation")
             ])
         );
         assert_eq!(generate_changelog, false);
@@ -387,24 +387,24 @@ mod test {
         assert_eq!(release_branch, "master");
         assert_eq!(
             major_changes,
-            ChangeList::new(vec![mock_change(
+            ChangeList::new(vec![mock::change::create(
                 "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
                 "BREAKING CHANGES"
             )])
         );
         assert_eq!(
             minor_changes,
-            ChangeList::new(vec![mock_change("^feat(.|\n)*$", "Features")])
+            ChangeList::new(vec![mock::change::create("^feat(.|\n)*$", "Features")])
         );
         assert_eq!(
             patch_changes,
-            ChangeList::new(vec![mock_change("^fix(.|\n)*$", "Patches")])
+            ChangeList::new(vec![mock::change::create("^fix(.|\n)*$", "Patches")])
         );
         assert_eq!(
             other_changes,
             ChangeList::new(vec![
-                mock_change("^chore(.|\n)*$", "Maintenance Items"),
-                mock_change("^docs(.|\n)*$", "Documentation")
+                mock::change::create("^chore(.|\n)*$", "Maintenance Items"),
+                mock::change::create("^docs(.|\n)*$", "Documentation")
             ])
         );
         assert_eq!(generate_changelog, false);

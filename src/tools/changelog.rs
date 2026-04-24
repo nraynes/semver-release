@@ -20,13 +20,13 @@ impl Changelog {
 
 #[cfg(test)]
 mod test {
-    use crate::mock::mock_version;
+    use crate::tests::mock;
 
     use super::*;
 
     #[test]
     fn test_changelog_generate() {
-        let version = mock_version();
+        let version = mock::version::create();
         let changelog = Changelog::generate(&version);
         assert_eq!(
             changelog.text,

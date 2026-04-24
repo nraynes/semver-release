@@ -56,10 +56,7 @@ impl Change {
 mod test {
     use serde_json::json;
 
-    use crate::{
-        Change,
-        mock::{mock_change, mock_commit},
-    };
+    use crate::{Change, tests::mock};
 
     #[test]
     fn test_change_new_valid() {
@@ -78,32 +75,32 @@ mod test {
 
     #[test]
     fn test_change_check_pattern_match_one() {
-        let change = mock_change("^feat(\n|.)*$", "Feature");
-        let commit = mock_commit("feat(super): the message header");
+        let change = mock::change::create("^feat(\n|.)*$", "Feature");
+        let commit = mock::commit::create("feat(super): the message header");
         let check = change.check(&commit);
         assert_eq!(check, true);
     }
 
     #[test]
     fn test_change_check_pattern_match_two() {
-        let change = mock_change("^fix(\n|.)*$", "Fix");
-        let commit = mock_commit("fix(super): the message header");
+        let change = mock::change::create("^fix(\n|.)*$", "Fix");
+        let commit = mock::commit::create("fix(super): the message header");
         let check = change.check(&commit);
         assert_eq!(check, true);
     }
 
     #[test]
     fn test_change_check_pattern_not_match_one() {
-        let change = mock_change("^fix(\n|.)*$", "Fix");
-        let commit = mock_commit("feat(super): the message header");
+        let change = mock::change::create("^fix(\n|.)*$", "Fix");
+        let commit = mock::commit::create("feat(super): the message header");
         let check = change.check(&commit);
         assert_eq!(check, false);
     }
 
     #[test]
     fn test_change_check_pattern_not_match_two() {
-        let change = mock_change("^feat(\n|.)*$", "Feature");
-        let commit = mock_commit("fix(super): the message header");
+        let change = mock::change::create("^feat(\n|.)*$", "Feature");
+        let commit = mock::commit::create("fix(super): the message header");
         let check = change.check(&commit);
         assert_eq!(check, false);
     }
