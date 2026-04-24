@@ -10,10 +10,12 @@ pub enum Auth {
 }
 
 impl Auth {
+    /// Performs authentication with repository service based on which state Auth is.
+    /// Supplies the environment variables from the running environment.
     pub fn authenticate(&self, env: &IndexMap<String, String>) -> Result<(), Alert> {
         match self {
             Auth::GITHUB => {
-                github::authenticate(env)?;
+                github::set_remote(env)?;
             }
         }
         Ok(())

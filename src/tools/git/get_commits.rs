@@ -1,6 +1,8 @@
 use crate::{Alert, models::Commit};
 use std::process::Command;
 
+/// Gets the commits in the history of the supplied branch.
+/// Returns as a vector of Commit objects.
 pub fn get_commits(branch: &str) -> Result<Vec<Commit>, Alert> {
     let command_output = Command::new("git").args(&["log", branch]).output()?;
     let stdout = String::from_utf8(command_output.stdout)?;

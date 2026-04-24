@@ -9,6 +9,9 @@ pub struct SemVer {
 }
 
 impl SemVer {
+    /// Get the current release version. Since SemVer-Release uses git tags to track versions,
+    /// so this is the default. If a git tag can not be found, for example, if a repository has just
+    /// been created and has not had it's first release yet, then versioning starts at 0.0.0.
     fn current_version(&self) -> (u32, u32, u32) {
         let latest_tag = match git::latest_tag() {
             Some(v) => v,
@@ -20,6 +23,9 @@ impl SemVer {
         }
     }
 
+    /// Initialize the SemVer object. This will attempt to parse arguments, read the config,
+    /// setup the logger, and anything else that needs to happen before the release stage.
+    /// If any of these cannot happen for some reason, an Err variant will be returned.
     pub fn init(args: Vec<String>, vars: IndexMap<String, String>) -> Result<Self, Alert> {
         let config_file_path: String = parse_args(args);
         let env = vars;
@@ -32,6 +38,8 @@ impl SemVer {
         })
     }
 
+    /// Starts the release stage. Reads the configuration that was loaded in the init
+    /// stage and performs the release cycle based on this configuration.
     pub fn release(&self) -> Result<(), Alert> {
         self.logger.info("Starting Release Cycle");
         self.config.git_auth_method().authenticate(&self.env)?;

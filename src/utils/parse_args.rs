@@ -1,3 +1,5 @@
+/// Parses the arguments from the command line. For now, this just gets the config
+/// file path and supplies a default if none is given.
 pub fn parse_args(args: Vec<String>) -> String {
     if args.len() < 2 {
         return String::from("config.semver.json");

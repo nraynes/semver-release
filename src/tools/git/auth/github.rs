@@ -4,7 +4,8 @@ use indexmap::IndexMap;
 
 use crate::Alert;
 
-pub fn authenticate(env: &IndexMap<String, String>) -> Result<(), Alert> {
+/// Caches credentials in git for authenticating with Github as remote origin.
+pub fn set_remote(env: &IndexMap<String, String>) -> Result<(), Alert> {
     Command::new("git")
         .args(&[
             "remote",
