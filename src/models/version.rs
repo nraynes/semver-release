@@ -1,5 +1,7 @@
 use crate::CommitMap;
 
+/// Data structure that contains a version with a major, minor, and patch number as well as a map
+/// of commits that represent changes since the previous version.
 pub struct Version {
     major: u32,
     minor: u32,
@@ -8,14 +10,18 @@ pub struct Version {
 }
 
 impl Version {
+    /// Gets the version in string form. Formatted, "v<major>.<minor>.<patch>"
     pub fn get(&self) -> String {
         format!("v{}.{}.{}", self.major, self.minor, self.patch)
     }
 
+    /// Map of commits since previous version.s
     pub fn changes(&self) -> &CommitMap {
         &self.changes
     }
 
+    /// Parse a string into the appropriate version numbers. Returns a tuple containing
+    /// the major, minor, and patch version numbers extracted from the string, if available.
     pub fn parse(version: &str) -> Option<(u32, u32, u32)> {
         let separated: Vec<&str> = version[1..].split(".").collect();
         let major_version = separated.get(0)?;

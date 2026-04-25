@@ -6,6 +6,7 @@ use r_log::LogLevel;
 use serde_json::{self, Value, map::Map};
 use std::fs;
 
+/// Configuration object to hold all the values from the global configuration file.
 pub struct Config {
     release_branch: String,
     major_changes: ChangeList,
@@ -19,42 +20,62 @@ pub struct Config {
 }
 
 impl Config {
+    /// Release branch to use for semantic versioning.
     pub fn release_branch(&self) -> &str {
         &self.release_branch
     }
 
+    /// List of objects containing change patterns along with what kind of change
+    /// a commit that matches the pattern would be for all changes that would cause
+    /// the major version number to be bumped by 1.
     pub fn major_changes(&self) -> &ChangeList {
         &self.major_changes
     }
 
+    /// List of objects containing change patterns along with what kind of change
+    /// a commit that matches the pattern would be for all changes that would cause
+    /// the minor version number to be bumped by 1.
     pub fn minor_changes(&self) -> &ChangeList {
         &self.minor_changes
     }
 
+    /// List of objects containing change patterns along with what kind of change
+    /// a commit that matches the pattern would be for all changes that would cause
+    /// the patch version number to be bumped by 1.
     pub fn patch_changes(&self) -> &ChangeList {
         &self.patch_changes
     }
 
+    /// List of objects containing change patterns along with what kind of change
+    /// a commit that matches the pattern would be for all changes that do not bump
+    /// bump the version but should be included in the changelog.
     pub fn other_changes(&self) -> &ChangeList {
         &self.other_changes
     }
 
+    /// Whether to generate a changelog or not.
     pub fn generate_changelog(&self) -> &bool {
         &self.generate_changelog
     }
 
+    /// What logging level should be used during runtime.
     pub fn log_level(&self) -> &LogLevel {
         &self.log_level
     }
 
+    /// An alternate path to where the generated changelog file should be stored.
+    /// Default is just the root folder with the file being named CHANGELOG.md.
     pub fn changelog_location(&self) -> &str {
         &self.changelog_location
     }
 
+    /// Which authentication type to use for git when making push/commits.
+    /// A valid option would be to use "github" if you are deploying this in a Github Action.
     pub fn git_auth_method(&self) -> &git::auth::Auth {
         &self.git_auth_method
     }
 
+    /// Creates a new Config object when supplied a valid deserialized JSON Value.
     pub fn load(config_contents: Value) -> Result<Self, Alert> {
         let conf = Config::parse(config_contents)?;
         Ok(Config {
@@ -70,6 +91,8 @@ impl Config {
         })
     }
 
+    /// Creates a new Config from a file at the supplied path, provided the file contains
+    /// valid syntax for JSON and the config.
     pub fn load_from_file(file_path: String) -> Result<Self, Alert> {
         let config_file = fs::read_to_string(file_path)?;
         let config_contents = serde_json::from_str(&config_file)?;
@@ -77,6 +100,7 @@ impl Config {
         Ok(config)
     }
 
+    /// Parses the JSON contents from a serde Value to enforce config file syntax.
     fn parse(
         config_content: Value,
     ) -> Result<
@@ -160,6 +184,7 @@ impl Config {
         ))
     }
 
+    /// Parses a list of changes from the config.
     fn parse_change_vec(conf: &Map<String, Value>, key: &str) -> Result<ChangeList, Alert> {
         let unpacked_value = conf
             .get(key)
