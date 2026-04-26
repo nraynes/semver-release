@@ -89,19 +89,26 @@ impl Config {
 
     /// Creates a new Config object when supplied a valid deserialized JSON Value.
     pub fn load(config_contents: Value) -> Result<Self, Alert> {
-        let conf = Config::parse(config_contents)?;
+        let conf = config_contents
+            .as_object()
+            .ok_or("Could not parse config.")?;
+
         Ok(Config {
-            release_branch: conf.0,
-            major_changes: conf.1,
-            minor_changes: conf.2,
-            patch_changes: conf.3,
-            other_changes: conf.4,
-            generate_changelog: conf.5,
-            log_level: conf.6,
-            changelog_location: conf.7,
-            git_auth_method: conf.8,
-            commit_changes: conf.9,
-            push_changes: conf.10,
+            release_branch: Config::parse_str_with_default(conf, "release_branch", "master")?,
+            major_changes: Config::parse_changelist(conf, "major_changes")?,
+            minor_changes: Config::parse_changelist(conf, "minor_changes")?,
+            patch_changes: Config::parse_changelist(conf, "patch_changes")?,
+            other_changes: Config::parse_changelist(conf, "other_changes")?,
+            generate_changelog: Config::parse_bool_with_default(conf, "generate_changelog", true)?,
+            log_level: Config::parse_loglevel_with_default(conf, "log_level", "info")?,
+            changelog_location: Config::parse_str_with_default(
+                conf,
+                "changelog_location",
+                "CHANGELOG.md",
+            )?,
+            git_auth_method: Config::parse_gitauthmethod(conf, "git_auth_method")?,
+            commit_changes: Config::parse_bool_with_default(conf, "commit_changes", true)?,
+            push_changes: Config::parse_bool_with_default(conf, "push_changes", true)?,
         })
     }
 
@@ -114,109 +121,56 @@ impl Config {
         Ok(config)
     }
 
-    /// Parses the JSON contents from a serde Value to enforce config file syntax.
-    fn parse(
-        config_content: Value,
-    ) -> Result<
-        (
-            String,
-            ChangeList,
-            ChangeList,
-            ChangeList,
-            ChangeList,
-            bool,
-            LogLevel,
-            String,
-            git::auth::Auth,
-            bool,
-            bool,
-        ),
-        Alert,
-    > {
-        // Parse the config.
-        let conf = config_content
-            .as_object()
-            .ok_or("Could not parse config.")?;
-
-        // Parse the release branch from global values. Default is the master branch.
-        let master_branch = Value::from("master");
-        let release_branch = conf
-            .get("release_branch")
-            .unwrap_or(&master_branch)
-            .as_str()
-            .ok_or("Could not get release_branch.")?;
-
-        // Parse the change lists.
-        let major_changes = Config::parse_change_vec(conf, "major_changes")?;
-        let minor_changes = Config::parse_change_vec(conf, "minor_changes")?;
-        let patch_changes = Config::parse_change_vec(conf, "patch_changes")?;
-        let other_changes = Config::parse_change_vec(conf, "other_changes")?;
-
-        // Parse changelog toggle.
-        let generate_changelog = conf
-            .get("generate_changelog")
-            .unwrap_or(&Value::from(true))
-            .as_bool()
-            .ok_or("Could not get generate_changelog.")?;
-
-        // Parse log level.
-        let log_level = LogLevel::from_str(
-            conf.get("log_level")
-                .unwrap_or(&Value::from("info"))
-                .as_str()
-                .ok_or("Could not get log_level.")?,
-        )
-        .ok_or("Not a valid value for LogLevel.")?;
-
-        // Parse changelog location. Default is CHANGELOG.md.
-        let default_changelog_location = Value::from("CHANGELOG.md");
-        let changelog_location = conf
-            .get("changelog_location")
-            .unwrap_or(&default_changelog_location)
-            .as_str()
-            .ok_or("Could not get changelog_location.")?;
-
-        // Parse the git authentication method.
-        let git_auth_method_value = conf
-            .get("git_auth_method")
-            .ok_or("Could not get git_auth_method.")?;
+    fn parse_gitauthmethod(conf: &Map<String, Value>, key: &str) -> Result<git::auth::Auth, Alert> {
+        let git_auth_method_value = conf.get(key).ok_or("Could not get git_auth_method.")?;
         let git_auth_method_str = git_auth_method_value
             .as_str()
             .ok_or("git_auth_method invalid value.")?;
-        let git_auth_method = git::auth::Auth::from_str(git_auth_method_str)?;
+        git::auth::Auth::from_str(git_auth_method_str)
+    }
 
-        // Parse commit changes toggle.
-        let commit_changes = conf
-            .get("commit_changes")
-            .unwrap_or(&Value::from(true))
+    fn parse_bool_with_default(
+        conf: &Map<String, Value>,
+        key: &str,
+        default: bool,
+    ) -> Result<bool, Alert> {
+        Ok(conf
+            .get(key)
+            .unwrap_or(&Value::from(default))
             .as_bool()
-            .ok_or("Could not get commit_changes.")?;
+            .ok_or("Could not get commit_changes.")?)
+    }
 
-        // Parse push changes toggle.
-        let push_changes = conf
-            .get("push_changes")
-            .unwrap_or(&Value::from(true))
-            .as_bool()
-            .ok_or("Could not get push_changes.")?;
+    fn parse_loglevel_with_default(
+        conf: &Map<String, Value>,
+        key: &str,
+        default: &str,
+    ) -> Result<LogLevel, Alert> {
+        Ok(LogLevel::from_str(
+            conf.get(key)
+                .unwrap_or(&Value::from(default))
+                .as_str()
+                .ok_or("Could not get log_level.")?,
+        )
+        .ok_or("Not a valid value for LogLevel.")?)
+    }
 
-        // Return with all the values to instantiate a Config.
-        Ok((
-            String::from(release_branch),
-            major_changes,
-            minor_changes,
-            patch_changes,
-            other_changes,
-            generate_changelog,
-            log_level,
-            String::from(changelog_location),
-            git_auth_method,
-            commit_changes,
-            push_changes,
+    /// Parse a string from the config.
+    fn parse_str_with_default(
+        conf: &Map<String, Value>,
+        key: &str,
+        default: &str,
+    ) -> Result<String, Alert> {
+        Ok(String::from(
+            conf.get(key)
+                .unwrap_or(&Value::from(default))
+                .as_str()
+                .ok_or("Could not get string from key.")?,
         ))
     }
 
     /// Parses a list of changes from the config.
-    fn parse_change_vec(conf: &Map<String, Value>, key: &str) -> Result<ChangeList, Alert> {
+    fn parse_changelist(conf: &Map<String, Value>, key: &str) -> Result<ChangeList, Alert> {
         let unpacked_value = conf
             .get(key)
             .ok_or("Could not parse value from change vector in config.")?;
@@ -241,7 +195,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_config_parse_valid() {
+    fn test_config_load_valid() {
         let json_content: Value = json!({
             "release_branch": "feature_branch",
             "major_changes": [
@@ -279,72 +233,147 @@ mod test {
             "commit_changes": true,
             "push_changes": true
         });
-        let (
-            release_branch,
-            major_changes,
-            minor_changes,
-            patch_changes,
-            other_changes,
-            generate_changelog,
-            log_level,
-            changelog_location,
-            git_auth_method,
-            commit_changes,
-            push_changes,
-        ) = Config::parse(json_content).unwrap();
-        assert_eq!(release_branch, "feature_branch");
+        let config = Config::load(json_content).unwrap();
+        assert_eq!(config.release_branch, "feature_branch");
         assert_eq!(
-            major_changes,
+            config.major_changes,
             ChangeList::new(vec![mock::change::create(
                 "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
                 "BREAKING CHANGES"
             )])
         );
         assert_eq!(
-            minor_changes,
+            config.minor_changes,
             ChangeList::new(vec![mock::change::create("^feat(.|\n)*$", "Features")])
         );
         assert_eq!(
-            patch_changes,
+            config.patch_changes,
             ChangeList::new(vec![mock::change::create("^fix(.|\n)*$", "Patches")])
         );
         assert_eq!(
-            other_changes,
+            config.other_changes,
             ChangeList::new(vec![
                 mock::change::create("^chore(.|\n)*$", "Maintenance Items"),
                 mock::change::create("^docs(.|\n)*$", "Documentation")
             ])
         );
-        assert_eq!(generate_changelog, false);
-        assert_eq!(log_level, LogLevel::WARNING);
-        assert_eq!(changelog_location, "THECHANGES.md");
-        assert_eq!(git_auth_method, Auth::GITHUB);
-        assert_eq!(commit_changes, true);
-        assert_eq!(push_changes, true);
+        assert_eq!(config.generate_changelog, false);
+        assert_eq!(config.log_level, LogLevel::WARNING);
+        assert_eq!(config.changelog_location, "THECHANGES.md");
+        assert_eq!(config.git_auth_method, Auth::GITHUB);
+        assert_eq!(config.commit_changes, true);
+        assert_eq!(config.push_changes, true);
     }
 
     #[test]
-    fn test_config_parse_default_changelog_location() {
-        let json_content: Value = json!({
+    fn test_config_parse_str_with_default_valid() {
+        let json_content = json!({
             "release_branch": "feature_branch",
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
+        });
+        let conf = json_content
+            .as_object()
+            .ok_or("Could not parse config.")
+            .unwrap();
+        let result =
+            Config::parse_str_with_default(conf, "release_branch", "default_value").unwrap();
+        assert_eq!(result, "feature_branch");
+    }
+
+    #[test]
+    fn test_config_parse_str_with_default_invalid() {
+        let json_content = json!({
+            "nothing": "feature_branch",
+        });
+        let conf = json_content
+            .as_object()
+            .ok_or("Could not parse config.")
+            .unwrap();
+        let result =
+            Config::parse_str_with_default(conf, "release_branch", "default_value").unwrap();
+        assert_eq!(result, "default_value");
+    }
+
+    #[test]
+    fn test_config_parse_bool_with_default_valid() {
+        let json_content = json!({
+            "generate_changelog": false,
+        });
+        let conf = json_content
+            .as_object()
+            .ok_or("Could not parse config.")
+            .unwrap();
+        let result = Config::parse_bool_with_default(conf, "generate_changelog", true).unwrap();
+        assert_eq!(result, false);
+    }
+
+    #[test]
+    fn test_config_parse_bool_with_default_invalid() {
+        let json_content = json!({
+            "nothing": false,
+        });
+        let conf = json_content
+            .as_object()
+            .ok_or("Could not parse config.")
+            .unwrap();
+        let result = Config::parse_bool_with_default(conf, "generate_changelog", true).unwrap();
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn test_config_parse_loglevel_with_default_valid() {
+        let json_content = json!({
+            "log_level": "warning",
+        });
+        let conf = json_content
+            .as_object()
+            .ok_or("Could not parse config.")
+            .unwrap();
+        let result = Config::parse_loglevel_with_default(conf, "log_level", "info").unwrap();
+        assert_eq!(result, LogLevel::WARNING);
+    }
+
+    #[test]
+    fn test_config_parse_loglevel_with_default_invalid() {
+        let json_content = json!({
+            "nothing": "warning",
+        });
+        let conf = json_content
+            .as_object()
+            .ok_or("Could not parse config.")
+            .unwrap();
+        let result = Config::parse_loglevel_with_default(conf, "log_level", "info").unwrap();
+        assert_eq!(result, LogLevel::INFO);
+    }
+
+    #[test]
+    fn test_config_parse_gitauthmethod_valid() {
+        let json_content = json!({
+            "git_auth_method": "github",
+        });
+        let conf = json_content
+            .as_object()
+            .ok_or("Could not parse config.")
+            .unwrap();
+        let result = Config::parse_gitauthmethod(conf, "git_auth_method").unwrap();
+        assert_eq!(result, git::auth::Auth::GITHUB);
+    }
+
+    #[test]
+    fn test_config_parse_gitauthmethod_invalid() {
+        let json_content = json!({
+            "git_auth_method": "notvalid",
+        });
+        let conf = json_content
+            .as_object()
+            .ok_or("Could not parse config.")
+            .unwrap();
+        let result = Config::parse_gitauthmethod(conf, "git_auth_method");
+        assert_eq!(result.is_err(), true);
+    }
+
+    #[test]
+    fn test_config_parse_changelist_valid() {
+        let json_content = json!({
             "other_changes": [
                 {
                     "pattern": "^chore(.|\n)*$",
@@ -355,78 +384,25 @@ mod test {
                     "kind": "Documentation"
                 }
             ],
-            "generate_changelog": false,
-            "log_level": "warning",
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": true
         });
-        let (
-            release_branch,
-            major_changes,
-            minor_changes,
-            patch_changes,
-            other_changes,
-            generate_changelog,
-            log_level,
-            changelog_location,
-            git_auth_method,
-            commit_changes,
-            push_changes,
-        ) = Config::parse(json_content).unwrap();
-        assert_eq!(release_branch, "feature_branch");
+        let conf = json_content
+            .as_object()
+            .ok_or("Could not parse config.")
+            .unwrap();
+        let result = Config::parse_changelist(conf, "other_changes").unwrap();
         assert_eq!(
-            major_changes,
-            ChangeList::new(vec![mock::change::create(
-                "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                "BREAKING CHANGES"
-            )])
-        );
-        assert_eq!(
-            minor_changes,
-            ChangeList::new(vec![mock::change::create("^feat(.|\n)*$", "Features")])
-        );
-        assert_eq!(
-            patch_changes,
-            ChangeList::new(vec![mock::change::create("^fix(.|\n)*$", "Patches")])
-        );
-        assert_eq!(
-            other_changes,
+            result,
             ChangeList::new(vec![
                 mock::change::create("^chore(.|\n)*$", "Maintenance Items"),
                 mock::change::create("^docs(.|\n)*$", "Documentation")
             ])
         );
-        assert_eq!(generate_changelog, false);
-        assert_eq!(log_level, LogLevel::WARNING);
-        assert_eq!(changelog_location, "CHANGELOG.md");
-        assert_eq!(git_auth_method, Auth::GITHUB);
-        assert_eq!(commit_changes, true);
-        assert_eq!(push_changes, true);
     }
 
     #[test]
-    fn test_config_parse_default_release_branch() {
-        let json_content: Value = json!({
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
+    fn test_config_parse_changelist_invalid() {
+        let json_content = json!({
+            "nothing": [
                 {
                     "pattern": "^chore(.|\n)*$",
                     "kind": "Maintenance Items"
@@ -436,525 +412,12 @@ mod test {
                     "kind": "Documentation"
                 }
             ],
-            "generate_changelog": false,
-            "log_level": "warning",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": true
         });
-        let (
-            release_branch,
-            major_changes,
-            minor_changes,
-            patch_changes,
-            other_changes,
-            generate_changelog,
-            log_level,
-            changelog_location,
-            git_auth_method,
-            commit_changes,
-            push_changes,
-        ) = Config::parse(json_content).unwrap();
-        assert_eq!(release_branch, "master");
-        assert_eq!(
-            major_changes,
-            ChangeList::new(vec![mock::change::create(
-                "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                "BREAKING CHANGES"
-            )])
-        );
-        assert_eq!(
-            minor_changes,
-            ChangeList::new(vec![mock::change::create("^feat(.|\n)*$", "Features")])
-        );
-        assert_eq!(
-            patch_changes,
-            ChangeList::new(vec![mock::change::create("^fix(.|\n)*$", "Patches")])
-        );
-        assert_eq!(
-            other_changes,
-            ChangeList::new(vec![
-                mock::change::create("^chore(.|\n)*$", "Maintenance Items"),
-                mock::change::create("^docs(.|\n)*$", "Documentation")
-            ])
-        );
-        assert_eq!(generate_changelog, false);
-        assert_eq!(log_level, LogLevel::WARNING);
-        assert_eq!(changelog_location, "THECHANGES.md");
-        assert_eq!(git_auth_method, Auth::GITHUB);
-        assert_eq!(commit_changes, true);
-        assert_eq!(push_changes, true);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_release_branch() {
-        let json_content: Value = json!({
-            "release_branch": 888,
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
-                {
-                    "pattern": "^chore(.|\n)*$",
-                    "kind": "Maintenance Items"
-                },
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": false,
-            "log_level": "warning",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": true
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_major_changes() {
-        let json_content: Value = json!({
-            "release_branch": "feature_branch",
-            "major_changes": [
-                "BREAKING CHANGE"
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
-                {
-                    "pattern": "^chore(.|\n)*$",
-                    "kind": "Maintenance Items"
-                },
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": false,
-            "log_level": "warning",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": true
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_minor_changes() {
-        let json_content: Value = json!({
-            "release_branch": "feature_branch",
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": true,
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
-                {
-                    "pattern": "^chore(.|\n)*$",
-                    "kind": "Maintenance Items"
-                },
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": false,
-            "log_level": "warning",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": true
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_patch_changes() {
-        let json_content: Value = json!({
-            "release_branch": "feature_branch",
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": 88.8
-                }
-            ],
-            "other_changes": [
-                {
-                    "pattern": "^chore(.|\n)*$",
-                    "kind": "Maintenance Items"
-                },
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": false,
-            "log_level": "warning",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": true
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_other_changes() {
-        let json_content: Value = json!({
-            "release_branch": "feature_branch",
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
-                [
-                    "Hello",
-                    "world",
-                    false
-                ],
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": false,
-            "log_level": "warning",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": true
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_generate_changelog() {
-        let json_content: Value = json!({
-            "release_branch": "feature_branch",
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
-                {
-                    "pattern": "^chore(.|\n)*$",
-                    "kind": "Maintenance Items"
-                },
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": 9007,
-            "log_level": "warning",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": true
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_log_level() {
-        let json_content: Value = json!({
-            "release_branch": "feature_branch",
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
-                {
-                    "pattern": "^chore(.|\n)*$",
-                    "kind": "Maintenance Items"
-                },
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": true,
-            "log_level": "notavalidlevel",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": true
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_changelog_location() {
-        let json_content: Value = json!({
-            "release_branch": "feature_branch",
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
-                {
-                    "pattern": "^chore(.|\n)*$",
-                    "kind": "Maintenance Items"
-                },
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": true,
-            "log_level": "warning",
-            "changelog_location": false,
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": true
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_git_auth_method() {
-        let json_content: Value = json!({
-            "release_branch": "feature_branch",
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
-                {
-                    "pattern": "^chore(.|\n)*$",
-                    "kind": "Maintenance Items"
-                },
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": false,
-            "log_level": "warning",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "notavalidrepo",
-            "commit_changes": true,
-            "push_changes": true
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_commit_changes() {
-        let json_content: Value = json!({
-            "release_branch": "feature_branch",
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
-                {
-                    "pattern": "^chore(.|\n)*$",
-                    "kind": "Maintenance Items"
-                },
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": false,
-            "log_level": "warning",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github",
-            "commit_changes": 89,
-            "push_changes": true
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
-    }
-
-    #[test]
-    fn test_config_parse_invalid_push_changes() {
-        let json_content: Value = json!({
-            "release_branch": "feature_branch",
-            "major_changes": [
-                {
-                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                    "kind": "BREAKING CHANGES"
-                }
-            ],
-            "minor_changes": [
-                {
-                    "pattern": "^feat(.|\n)*$",
-                    "kind": "Features"
-                }
-            ],
-            "patch_changes": [
-                {
-                    "pattern": "^fix(.|\n)*$",
-                    "kind": "Patches"
-                }
-            ],
-            "other_changes": [
-                {
-                    "pattern": "^chore(.|\n)*$",
-                    "kind": "Maintenance Items"
-                },
-                {
-                    "pattern": "^docs(.|\n)*$",
-                    "kind": "Documentation"
-                }
-            ],
-            "generate_changelog": false,
-            "log_level": "warning",
-            "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github",
-            "commit_changes": true,
-            "push_changes": "SomeString"
-        });
-        let result = Config::parse(json_content);
-        assert_eq!(result.is_ok(), false);
+        let conf = json_content
+            .as_object()
+            .ok_or("Could not parse config.")
+            .unwrap();
+        let result = Config::parse_changelist(conf, "other_changes");
+        assert_eq!(result.is_err(), true);
     }
 }
