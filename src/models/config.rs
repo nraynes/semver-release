@@ -17,6 +17,8 @@ pub struct Config {
     log_level: LogLevel,
     changelog_location: String,
     git_auth_method: git::auth::Auth,
+    commit_changes: bool,
+    push_changes: bool,
 }
 
 impl Config {
@@ -75,6 +77,16 @@ impl Config {
         &self.git_auth_method
     }
 
+    /// Whether to commit the changes made during the semantic versioning process.
+    pub fn commit_changes(&self) -> &bool {
+        &self.commit_changes
+    }
+
+    /// Whether to push the changes made during the semantic versioning process.
+    pub fn push_changes(&self) -> &bool {
+        &self.push_changes
+    }
+
     /// Creates a new Config object when supplied a valid deserialized JSON Value.
     pub fn load(config_contents: Value) -> Result<Self, Alert> {
         let conf = Config::parse(config_contents)?;
@@ -88,6 +100,8 @@ impl Config {
             log_level: conf.6,
             changelog_location: conf.7,
             git_auth_method: conf.8,
+            commit_changes: conf.9,
+            push_changes: conf.10,
         })
     }
 
@@ -114,6 +128,8 @@ impl Config {
             LogLevel,
             String,
             git::auth::Auth,
+            bool,
+            bool,
         ),
         Alert,
     > {
@@ -170,6 +186,20 @@ impl Config {
         let git_auth_method = git::auth::Auth::from_str(git_auth_method_str)
             .ok_or("Invalid value for git_auth_method.")?;
 
+        // Parse commit changes toggle.
+        let commit_changes = conf
+            .get("commit_changes")
+            .unwrap_or(&Value::from(true))
+            .as_bool()
+            .ok_or("Could not get commit_changes.")?;
+
+        // Parse push changes toggle.
+        let push_changes = conf
+            .get("push_changes")
+            .unwrap_or(&Value::from(true))
+            .as_bool()
+            .ok_or("Could not get push_changes.")?;
+
         // Return with all the values to instantiate a Config.
         Ok((
             String::from(release_branch),
@@ -181,6 +211,8 @@ impl Config {
             log_level,
             String::from(changelog_location),
             git_auth_method,
+            commit_changes,
+            push_changes,
         ))
     }
 
@@ -244,7 +276,9 @@ mod test {
             "generate_changelog": false,
             "log_level": "warning",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let (
             release_branch,
@@ -256,6 +290,8 @@ mod test {
             log_level,
             changelog_location,
             git_auth_method,
+            commit_changes,
+            push_changes,
         ) = Config::parse(json_content).unwrap();
         assert_eq!(release_branch, "feature_branch");
         assert_eq!(
@@ -284,6 +320,8 @@ mod test {
         assert_eq!(log_level, LogLevel::WARNING);
         assert_eq!(changelog_location, "THECHANGES.md");
         assert_eq!(git_auth_method, Auth::GITHUB);
+        assert_eq!(commit_changes, true);
+        assert_eq!(push_changes, true);
     }
 
     #[test]
@@ -320,7 +358,9 @@ mod test {
             ],
             "generate_changelog": false,
             "log_level": "warning",
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let (
             release_branch,
@@ -332,6 +372,8 @@ mod test {
             log_level,
             changelog_location,
             git_auth_method,
+            commit_changes,
+            push_changes,
         ) = Config::parse(json_content).unwrap();
         assert_eq!(release_branch, "feature_branch");
         assert_eq!(
@@ -360,6 +402,8 @@ mod test {
         assert_eq!(log_level, LogLevel::WARNING);
         assert_eq!(changelog_location, "CHANGELOG.md");
         assert_eq!(git_auth_method, Auth::GITHUB);
+        assert_eq!(commit_changes, true);
+        assert_eq!(push_changes, true);
     }
 
     #[test]
@@ -396,7 +440,9 @@ mod test {
             "generate_changelog": false,
             "log_level": "warning",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let (
             release_branch,
@@ -408,6 +454,8 @@ mod test {
             log_level,
             changelog_location,
             git_auth_method,
+            commit_changes,
+            push_changes,
         ) = Config::parse(json_content).unwrap();
         assert_eq!(release_branch, "master");
         assert_eq!(
@@ -436,6 +484,8 @@ mod test {
         assert_eq!(log_level, LogLevel::WARNING);
         assert_eq!(changelog_location, "THECHANGES.md");
         assert_eq!(git_auth_method, Auth::GITHUB);
+        assert_eq!(commit_changes, true);
+        assert_eq!(push_changes, true);
     }
 
     #[test]
@@ -473,7 +523,9 @@ mod test {
             "generate_changelog": false,
             "log_level": "warning",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let result = Config::parse(json_content);
         assert_eq!(result.is_ok(), false);
@@ -511,7 +563,9 @@ mod test {
             "generate_changelog": false,
             "log_level": "warning",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let result = Config::parse(json_content);
         assert_eq!(result.is_ok(), false);
@@ -552,7 +606,9 @@ mod test {
             "generate_changelog": false,
             "log_level": "warning",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let result = Config::parse(json_content);
         assert_eq!(result.is_ok(), false);
@@ -593,7 +649,9 @@ mod test {
             "generate_changelog": false,
             "log_level": "warning",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let result = Config::parse(json_content);
         assert_eq!(result.is_ok(), false);
@@ -635,7 +693,9 @@ mod test {
             "generate_changelog": false,
             "log_level": "warning",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let result = Config::parse(json_content);
         assert_eq!(result.is_ok(), false);
@@ -676,7 +736,9 @@ mod test {
             "generate_changelog": 9007,
             "log_level": "warning",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let result = Config::parse(json_content);
         assert_eq!(result.is_ok(), false);
@@ -717,7 +779,9 @@ mod test {
             "generate_changelog": true,
             "log_level": "notavalidlevel",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let result = Config::parse(json_content);
         assert_eq!(result.is_ok(), false);
@@ -758,7 +822,9 @@ mod test {
             "generate_changelog": true,
             "log_level": "warning",
             "changelog_location": false,
-            "git_auth_method": "github"
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": true
         });
         let result = Config::parse(json_content);
         assert_eq!(result.is_ok(), false);
@@ -799,7 +865,95 @@ mod test {
             "generate_changelog": false,
             "log_level": "warning",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "notavalidrepo"
+            "git_auth_method": "notavalidrepo",
+            "commit_changes": true,
+            "push_changes": true
+        });
+        let result = Config::parse(json_content);
+        assert_eq!(result.is_ok(), false);
+    }
+
+    #[test]
+    fn test_config_parse_invalid_commit_changes() {
+        let json_content: Value = json!({
+            "release_branch": "feature_branch",
+            "major_changes": [
+                {
+                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
+                    "kind": "BREAKING CHANGES"
+                }
+            ],
+            "minor_changes": [
+                {
+                    "pattern": "^feat(.|\n)*$",
+                    "kind": "Features"
+                }
+            ],
+            "patch_changes": [
+                {
+                    "pattern": "^fix(.|\n)*$",
+                    "kind": "Patches"
+                }
+            ],
+            "other_changes": [
+                {
+                    "pattern": "^chore(.|\n)*$",
+                    "kind": "Maintenance Items"
+                },
+                {
+                    "pattern": "^docs(.|\n)*$",
+                    "kind": "Documentation"
+                }
+            ],
+            "generate_changelog": false,
+            "log_level": "warning",
+            "changelog_location": "THECHANGES.md",
+            "git_auth_method": "github",
+            "commit_changes": 89,
+            "push_changes": true
+        });
+        let result = Config::parse(json_content);
+        assert_eq!(result.is_ok(), false);
+    }
+
+    #[test]
+    fn test_config_parse_invalid_push_changes() {
+        let json_content: Value = json!({
+            "release_branch": "feature_branch",
+            "major_changes": [
+                {
+                    "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
+                    "kind": "BREAKING CHANGES"
+                }
+            ],
+            "minor_changes": [
+                {
+                    "pattern": "^feat(.|\n)*$",
+                    "kind": "Features"
+                }
+            ],
+            "patch_changes": [
+                {
+                    "pattern": "^fix(.|\n)*$",
+                    "kind": "Patches"
+                }
+            ],
+            "other_changes": [
+                {
+                    "pattern": "^chore(.|\n)*$",
+                    "kind": "Maintenance Items"
+                },
+                {
+                    "pattern": "^docs(.|\n)*$",
+                    "kind": "Documentation"
+                }
+            ],
+            "generate_changelog": false,
+            "log_level": "warning",
+            "changelog_location": "THECHANGES.md",
+            "git_auth_method": "github",
+            "commit_changes": true,
+            "push_changes": "SomeString"
         });
         let result = Config::parse(json_content);
         assert_eq!(result.is_ok(), false);

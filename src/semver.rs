@@ -60,8 +60,12 @@ impl SemVer {
             let changelog = Changelog::generate(&version);
             changelog.save(self.config.changelog_location())?;
         }
-        git::commit_all(&format!("semver_release_version_update {}", version.get()))?;
-        git::push()?;
+        if *self.config.commit_changes() {
+            git::commit_all(&format!("semver_release_version_update {}", version.get()))?;
+        }
+        if *self.config.push_changes() {
+            git::push()?;
+        }
         Ok(())
     }
 }
