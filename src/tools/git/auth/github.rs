@@ -7,7 +7,7 @@ use crate::Alert;
 /// Caches credentials in git for authenticating with Github as remote origin.
 pub fn set_remote(env: &IndexMap<String, String>) -> Result<(), Alert> {
     Command::new("git")
-        .args(&[
+        .args([
             "remote",
             "set-url",
             "origin",

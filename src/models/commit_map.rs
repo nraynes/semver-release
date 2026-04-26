@@ -10,10 +10,16 @@ pub struct CommitMap {
 
 impl Display for CommitMap {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for bucket in self.map.values().into_iter() {
-            write!(f, "{}\n", bucket)?;
+        for bucket in self.map.values() {
+            writeln!(f, "{}", bucket)?;
         }
         Ok(())
+    }
+}
+
+impl Default for CommitMap {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

@@ -51,9 +51,7 @@ use crate::{Alert, ChangeList, Commit, CommitMap, Version};
 ///     &minor_changes,
 ///     &patch_changes,
 ///     &other_changes,
-///     current_major,
-///     current_minor,
-///     current_patch,
+///     (current_major, current_minor, current_patch)
 /// )
 /// .unwrap();
 ///
@@ -113,50 +111,36 @@ use crate::{Alert, ChangeList, Commit, CommitMap, Version};
 /// ```
 ///
 pub fn analyze_commits(
-    commits: &Vec<Commit>,
+    commits: &[Commit],
     major_changes: &ChangeList,
     minor_changes: &ChangeList,
     patch_changes: &ChangeList,
     other_changes: &ChangeList,
-    current_major: u32,
-    current_minor: u32,
-    current_patch: u32,
+    current_version: (u32, u32, u32),
 ) -> Result<Version, Alert> {
-    let mut major = current_major;
-    let mut minor = current_minor;
-    let mut patch = current_patch;
+    let mut major = current_version.0;
+    let mut minor = current_version.1;
+    let mut patch = current_version.2;
     let mut changes: CommitMap = CommitMap::new();
     for commit in commits.iter() {
-        match major_changes.check(commit) {
-            Some(kind) => {
-                major += 1;
-                changes.insert(&kind, commit.clone())?;
-                continue;
-            }
-            None => {}
-        };
-        match minor_changes.check(commit) {
-            Some(kind) => {
-                minor += 1;
-                changes.insert(&kind, commit.clone())?;
-                continue;
-            }
-            None => {}
-        };
-        match patch_changes.check(commit) {
-            Some(kind) => {
-                patch += 1;
-                changes.insert(&kind, commit.clone())?;
-                continue;
-            }
-            None => {}
-        };
-        match other_changes.check(commit) {
-            Some(kind) => {
-                changes.insert(&kind, commit.clone())?;
-                continue;
-            }
-            None => {}
+        if let Some(kind) = major_changes.check(commit) {
+            major += 1;
+            changes.insert(&kind, commit.clone())?;
+            continue;
+        }
+        if let Some(kind) = minor_changes.check(commit) {
+            minor += 1;
+            changes.insert(&kind, commit.clone())?;
+            continue;
+        }
+        if let Some(kind) = patch_changes.check(commit) {
+            patch += 1;
+            changes.insert(&kind, commit.clone())?;
+            continue;
+        }
+        if let Some(kind) = other_changes.check(commit) {
+            changes.insert(&kind, commit.clone())?;
+            continue;
         };
     }
     Ok(Version::new(major, minor, patch, changes))
@@ -191,9 +175,7 @@ mod test {
             &minor_changes,
             &patch_changes,
             &other_changes,
-            current_major,
-            current_minor,
-            current_patch,
+            (current_major, current_minor, current_patch),
         )
         .unwrap();
 

@@ -22,15 +22,11 @@ impl PartialEq for CommitBucket {
         }
         true
     }
-
-    fn ne(&self, other: &Self) -> bool {
-        !self.eq(other)
-    }
 }
 
 impl Display for CommitBucket {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "## {}\n\n", self.kind)?;
+        writeln!(f, "## {}\n", self.kind)?;
         for commit in self.commits.iter() {
             write!(f, "- {}", commit)?;
         }

@@ -16,15 +16,11 @@ impl PartialEq for Commit {
     fn eq(&self, other: &Self) -> bool {
         self.message == other.message
     }
-
-    fn ne(&self, other: &Self) -> bool {
-        self.message != other.message
-    }
 }
 
 impl Display for Commit {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}\n", self.message)
+        writeln!(f, "{}", self.message)
     }
 }
 
@@ -49,7 +45,7 @@ impl Commit {
         Commit {
             id: id.to_string(),
             author: author.to_string(),
-            timestamp: timestamp,
+            timestamp,
             message: message.to_string(),
         }
     }

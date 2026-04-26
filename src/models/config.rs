@@ -4,7 +4,7 @@ use crate::{
 };
 use r_log::LogLevel;
 use serde_json::{self, Value, map::Map};
-use std::fs;
+use std::{fs, str::FromStr};
 
 /// Configuration object to hold all the values from the global configuration file.
 pub struct Config {
@@ -183,8 +183,7 @@ impl Config {
         let git_auth_method_str = git_auth_method_value
             .as_str()
             .ok_or("git_auth_method invalid value.")?;
-        let git_auth_method = git::auth::Auth::from_str(git_auth_method_str)
-            .ok_or("Invalid value for git_auth_method.")?;
+        let git_auth_method = git::auth::Auth::from_str(git_auth_method_str)?;
 
         // Parse commit changes toggle.
         let commit_changes = conf

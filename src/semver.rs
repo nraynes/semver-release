@@ -17,10 +17,7 @@ impl SemVer {
             Some(v) => v,
             None => return (0, 0, 0),
         };
-        match Version::parse(&latest_tag) {
-            Some(v) => v,
-            None => (0, 0, 0),
-        }
+        Version::parse(&latest_tag).unwrap_or_default()
     }
 
     /// Initialize the SemVer object. This will attempt to parse arguments, read the config,
@@ -51,9 +48,7 @@ impl SemVer {
             self.config.minor_changes(),
             self.config.patch_changes(),
             self.config.other_changes(),
-            current_major,
-            current_minor,
-            current_patch,
+            (current_major, current_minor, current_patch),
         )?;
         git::tag(&version.get(), "SemVer-Release")?;
         if *self.config.generate_changelog() {

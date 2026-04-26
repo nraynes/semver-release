@@ -9,6 +9,12 @@ pub struct Version {
     changes: CommitMap,
 }
 
+impl Default for Version {
+    fn default() -> Self {
+        Self::new(0, 0, 0, CommitMap::new())
+    }
+}
+
 impl Version {
     /// Gets the version in string form. Formatted, "v<major>.<minor>.<patch>"
     pub fn get(&self) -> String {
@@ -24,7 +30,7 @@ impl Version {
     /// the major, minor, and patch version numbers extracted from the string, if available.
     pub fn parse(version: &str) -> Option<(u32, u32, u32)> {
         let separated: Vec<&str> = version[1..].split(".").collect();
-        let major_version = separated.get(0)?;
+        let major_version = separated.first()?;
         let minor_version = separated.get(1)?;
         let patch_version = separated.get(2)?;
         Some((

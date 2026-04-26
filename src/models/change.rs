@@ -14,10 +14,6 @@ impl PartialEq for Change {
     fn eq(&self, other: &Self) -> bool {
         self.pattern.as_str() == other.pattern.as_str() && self.kind == other.kind
     }
-
-    fn ne(&self, other: &Self) -> bool {
-        !self.eq(other)
-    }
 }
 
 impl Change {
