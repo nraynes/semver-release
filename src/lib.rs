@@ -14,13 +14,13 @@
 //! by right clicking and selecting properties, then going to the permissions tab.
 //!
 //! ```markdown
-//! release
+//! semver
 //! ```
 //!
 //! OR
 //!
 //! ```markdown
-//! release /path/to/config/file.json
+//! semver /path/to/config/file.json
 //! ```
 
 mod mock;

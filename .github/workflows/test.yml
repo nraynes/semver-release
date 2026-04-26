@@ -1,0 +1,24 @@
+name: CI/CD Test
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - './**'
+  workflow_dispatch:
+
+jobs:
+  test-auth:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: cargo build
+
+      - name: Run Linters
+        run: cargo clippy
+
+      - name: Run Tests
+        run: cargo test
