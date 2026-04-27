@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Pull changes first.
+git pull
+
 # Function to check if an element is present in an array.
 has_element() {
     local e
