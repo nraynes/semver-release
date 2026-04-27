@@ -44,7 +44,7 @@ impl SemVer {
 
         // Get the commits since the last version, or all of them if no tag was present.
         self.logger.info("Acquiring commits");
-        let commits = git::get_commits(self.config.release_branch(), latest_tag)?;
+        let commits = git::get_commits(latest_tag)?;
 
         // Analyze the list of commits.
         self.logger.info("Analyzing commits");
