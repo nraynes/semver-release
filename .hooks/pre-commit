@@ -13,16 +13,6 @@ diff_pre=($(git diff --name-only))
 # Format files
 cargo fmt
 
-# Get the diff from git after formatting
-diff_post=($(git diff --name-only))
-
-# Check if any files were changed and add them to the current commit
-for val in "${diff_post[@]}"; do
-    if ! has_element "$val" "${diff_pre[@]}"; then
-        git add "$val"
-    fi
-done
-
 # Generate documentation
 cargo doc
 
@@ -32,3 +22,14 @@ cargo test
 # Run release build for Linux target
 cargo build --release --target x86_64-unknown-linux-gnu
 mv target/x86_64-unknown-linux-gnu/release/semver-release target/x86_64-unknown-linux-gnu/release/semver_linux
+cp target/x86_64-unknown-linux-gnu/release/semver_linux .release/semver_linux
+
+# Get the diff from git after formatting
+diff_post=($(git diff --name-only))
+
+# Check if any files were changed and add them to the current commit
+for val in "${diff_post[@]}"; do
+    if ! has_element "$val" "${diff_pre[@]}"; then
+        git add "$val"
+    fi
+done
