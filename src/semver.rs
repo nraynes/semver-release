@@ -1,4 +1,4 @@
-use crate::{Alert, Changelog, Config, Version, analyzer, git, parse_args};
+use crate::{Alert, Changelog, Config, Version, analyzer, git, parse_args, plugins};
 use indexmap::IndexMap;
 use r_log::Logger;
 
@@ -72,6 +72,9 @@ impl SemVer {
             let changelog = Changelog::generate(&version);
             changelog.save(self.config.changelog_location())?;
         }
+
+        // Run plugins.
+        plugins::run(&self.config, &self.logger)?;
 
         // Commit the changes.
         if *self.config.commit_changes() {

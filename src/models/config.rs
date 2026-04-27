@@ -2,6 +2,7 @@ use crate::{ChangeList, git, models::Alert};
 use derive_getters::Getters;
 use r_log::LogLevel;
 use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value};
 use std::fs;
 
 fn default_loglevel() -> LogLevel {
@@ -47,6 +48,8 @@ pub struct Config {
 
     #[serde(default = "default_true")]
     push_changes: bool,
+
+    plugins: Map<String, Value>,
 }
 
 impl Config {
@@ -112,7 +115,8 @@ mod test {
             "changelog_location": "THECHANGES.md",
             "git_auth_method": "GITHUB",
             "commit_changes": true,
-            "push_changes": true
+            "push_changes": true,
+            "plugins": {}
         });
         let config: Config = serde_json::from_value(json_content).unwrap();
         assert_eq!(config.release_branch, "feature_branch");

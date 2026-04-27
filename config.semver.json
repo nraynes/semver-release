@@ -41,5 +41,6 @@
     "changelog_location": "CHANGELOG.md",
     "git_auth_method": "GITHUB",
     "commit_changes": true,
-    "push_changes": true
+    "push_changes": true,
+    "plugins": {}
 }

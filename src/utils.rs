@@ -1,4 +1,5 @@
 mod parse_args;
+pub mod plugins;
 mod run_command;
 
 pub use parse_args::parse_args;
