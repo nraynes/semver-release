@@ -2,5 +2,6 @@
 
 ## Maintenance Items
 
+- chore: updated version
 - chore: separated tests in job
 
