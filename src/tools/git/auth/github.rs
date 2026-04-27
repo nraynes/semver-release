@@ -15,7 +15,6 @@ pub fn set_remote(env: &IndexMap<String, String>) -> Result<(), Alert> {
     let repo = env
         .get("GITHUB_REPOSITORY")
         .ok_or("GITHUB_REPOSITORY not in environment variables.")?;
-    println!("actor: {}, token: {}, repo: {}", actor, token, repo);
     Command::new("git")
         .args([
             "remote",

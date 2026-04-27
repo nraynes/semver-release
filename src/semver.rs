@@ -23,11 +23,11 @@ impl SemVer {
     /// Initialize the SemVer object. This will attempt to parse arguments, read the config,
     /// setup the logger, and anything else that needs to happen before the release stage.
     /// If any of these cannot happen for some reason, an Err variant will be returned.
-    pub fn init(args: Vec<String>, vars: IndexMap<String, String>) -> Result<Self, Alert> {
+    pub fn init(args: Vec<String>, env: IndexMap<String, String>) -> Result<Self, Alert> {
         let config_file_path: String = parse_args(args);
-        let env = vars;
         let config = Config::load_from_file(config_file_path)?;
         let logger = Logger::new(config.log_level().clone());
+        logger.info("Initialization complete");
         Ok(SemVer {
             config,
             env,
