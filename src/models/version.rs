@@ -1,7 +1,9 @@
 use crate::CommitMap;
+use derive_getters::Getters;
 
 /// Data structure that contains a version with a major, minor, and patch number as well as a map
 /// of commits that represent changes since the previous version.
+#[derive(Getters)]
 pub struct Version {
     major: u32,
     minor: u32,
@@ -19,11 +21,6 @@ impl Version {
     /// Gets the version in string form. Formatted, "v(major).(minor).(patch)"
     pub fn get(&self) -> String {
         format!("v{}.{}.{}", self.major, self.minor, self.patch)
-    }
-
-    /// Map of commits since previous version.s
-    pub fn changes(&self) -> &CommitMap {
-        &self.changes
     }
 
     /// Parse a string into the appropriate version numbers. Returns a tuple containing
