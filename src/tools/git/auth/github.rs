@@ -1,11 +1,13 @@
 use std::process::Command;
 
 use indexmap::IndexMap;
+use r_log::Logger;
 
 use crate::Alert;
 
 /// Caches credentials in git for authenticating with Github as remote origin.
-pub fn set_remote(env: &IndexMap<String, String>) -> Result<(), Alert> {
+pub fn set_remote(env: &IndexMap<String, String>, logger: &Logger) -> Result<(), Alert> {
+    logger.info("Authenticating with Github");
     let actor = env
         .get("GITHUB_ACTOR")
         .ok_or("GITHUB_ACTOR not in environment variables.")?;

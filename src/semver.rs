@@ -39,9 +39,14 @@ impl SemVer {
     /// stage and performs the release cycle based on this configuration.
     pub fn release(&self) -> Result<(), Alert> {
         self.logger.info("Starting Release Cycle");
-        self.config.git_auth_method().authenticate(&self.env)?;
+        self.config
+            .git_auth_method()
+            .authenticate(&self.env, &self.logger)?;
+        self.logger.info("Acquiring commits");
         let commits = git::get_commits(self.config.release_branch())?;
+        self.logger.info("Getting current version");
         let (current_major, current_minor, current_patch) = self.current_version();
+        self.logger.info("Analyzing commits");
         let version = analyzer::analyze_commits(
             &commits,
             self.config.major_changes(),
@@ -50,17 +55,22 @@ impl SemVer {
             self.config.other_changes(),
             (current_major, current_minor, current_patch),
         )?;
+        self.logger.info("Tagging version");
         git::tag(&version.get(), "SemVer-Release")?;
         if *self.config.generate_changelog() {
+            self.logger.info("Generating changelog");
             let changelog = Changelog::generate(&version);
             changelog.save(self.config.changelog_location())?;
         }
         if *self.config.commit_changes() {
+            self.logger.info("Committing changes");
             git::commit_all(&format!("semver_release_version_update {}", version.get()))?;
         }
         if *self.config.push_changes() {
+            self.logger.info("Pushing changes");
             git::push()?;
         }
+        self.logger.info("Done");
         Ok(())
     }
 }
