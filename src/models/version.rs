@@ -29,15 +29,21 @@ impl Version {
     /// Parse a string into the appropriate version numbers. Returns a tuple containing
     /// the major, minor, and patch version numbers extracted from the string, if available.
     pub fn parse(version: &str) -> Option<(u32, u32, u32)> {
+        if version.len() < 1 {
+            return None;
+        }
         let separated: Vec<&str> = version[1..].split(".").collect();
-        let major_version = separated.first()?;
-        let minor_version = separated.get(1)?;
-        let patch_version = separated.get(2)?;
-        Some((
-            major_version.parse().ok()?,
-            minor_version.parse().ok()?,
-            patch_version.parse().ok()?,
-        ))
+        if separated.len() == 3 {
+            let major_version = separated.first()?;
+            let minor_version = separated.get(1)?;
+            let patch_version = separated.get(2)?;
+            return Some((
+                major_version.parse().ok()?,
+                minor_version.parse().ok()?,
+                patch_version.parse().ok()?,
+            ));
+        }
+        None
     }
 
     pub fn new(major: u32, minor: u32, patch: u32, changes: CommitMap) -> Self {
@@ -61,8 +67,26 @@ mod test {
     }
 
     #[test]
-    fn test_version_parse_invalid() {
+    fn test_version_parse_invalid_full_len() {
         let parse_value = Version::parse("oopasdf91.9.2ff");
+        assert_eq!(parse_value, None);
+    }
+
+    #[test]
+    fn test_version_parse_invalid_one_len() {
+        let parse_value = Version::parse("v");
+        assert_eq!(parse_value, None);
+    }
+
+    #[test]
+    fn test_version_parse_invalid_no_input() {
+        let parse_value = Version::parse("");
+        assert_eq!(parse_value, None);
+    }
+
+    #[test]
+    fn test_version_parse_invalid_no_int() {
+        let parse_value = Version::parse("vIU.AB.PE");
         assert_eq!(parse_value, None);
     }
 
