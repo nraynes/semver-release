@@ -2,7 +2,6 @@ use crate::{ChangeList, git, models::Alert};
 use derive_getters::Getters;
 use r_log::LogLevel;
 use serde::{Deserialize, Serialize};
-use serde_json;
 use std::fs;
 
 fn default_loglevel() -> LogLevel {
