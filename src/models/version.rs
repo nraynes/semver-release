@@ -16,7 +16,7 @@ impl Default for Version {
 }
 
 impl Version {
-    /// Gets the version in string form. Formatted, "v<major>.<minor>.<patch>"
+    /// Gets the version in string form. Formatted, "v(major).(minor).(patch)"
     pub fn get(&self) -> String {
         format!("v{}.{}.{}", self.major, self.minor, self.patch)
     }
