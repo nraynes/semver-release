@@ -17,8 +17,11 @@ jobs:
       - name: Install Dependencies
         run: cargo build
 
-      - name: Run Linters
-        run: cargo clippy
+      - name: Run Static Analysis
+        run: cargo check
+
+      - name: Run Linter
+        run: cargo clippy -- -D warnings
 
       - name: Run Tests
         run: cargo test
