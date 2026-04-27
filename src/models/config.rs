@@ -77,6 +77,7 @@ mod test {
             "major_changes": {
                 "changes": [
                     {
+                        "priority": 1,
                         "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
                         "kind": "BREAKING CHANGES"
                     }
@@ -85,6 +86,7 @@ mod test {
             "minor_changes": {
                 "changes": [
                     {
+                        "priority": 2,
                         "pattern": "^feat(.|\n)*$",
                         "kind": "Features"
                     }
@@ -93,6 +95,7 @@ mod test {
             "patch_changes": {
                 "changes": [
                     {
+                        "priority": 3,
                         "pattern": "^fix(.|\n)*$",
                         "kind": "Patches"
                     }
@@ -101,10 +104,12 @@ mod test {
             "other_changes": {
                 "changes": [
                     {
+                        "priority": 4,
                         "pattern": "^chore(.|\n)*$",
                         "kind": "Maintenance Items"
                     },
                     {
+                        "priority": 5,
                         "pattern": "^docs(.|\n)*$",
                         "kind": "Documentation"
                     }
@@ -124,22 +129,23 @@ mod test {
             config.major_changes,
             ChangeList::new(vec![mock::change::create(
                 "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-                "BREAKING CHANGES"
+                "BREAKING CHANGES",
+                1
             )])
         );
         assert_eq!(
             config.minor_changes,
-            ChangeList::new(vec![mock::change::create("^feat(.|\n)*$", "Features")])
+            ChangeList::new(vec![mock::change::create("^feat(.|\n)*$", "Features", 2)])
         );
         assert_eq!(
             config.patch_changes,
-            ChangeList::new(vec![mock::change::create("^fix(.|\n)*$", "Patches")])
+            ChangeList::new(vec![mock::change::create("^fix(.|\n)*$", "Patches", 3)])
         );
         assert_eq!(
             config.other_changes,
             ChangeList::new(vec![
-                mock::change::create("^chore(.|\n)*$", "Maintenance Items"),
-                mock::change::create("^docs(.|\n)*$", "Documentation")
+                mock::change::create("^chore(.|\n)*$", "Maintenance Items", 4),
+                mock::change::create("^docs(.|\n)*$", "Documentation", 5)
             ])
         );
         assert_eq!(config.generate_changelog, false);

@@ -3,6 +3,7 @@
     "major_changes": {
         "changes": [
             {
+                "priority": 1,
                 "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
                 "kind": "BREAKING CHANGES"
             }
@@ -11,6 +12,7 @@
     "minor_changes": {
         "changes": [
             {
+                "priority": 2,
                 "pattern": "^feat(.|\n)*$",
                 "kind": "Features"
             }
@@ -19,6 +21,7 @@
     "patch_changes": {
         "changes": [
             {
+                "priority": 3,
                 "pattern": "^fix(.|\n)*$",
                 "kind": "Patches"
             }
@@ -27,10 +30,12 @@
     "other_changes": {
         "changes": [
             {
+                "priority": 4,
                 "pattern": "^chore(.|\n)*$",
                 "kind": "Maintenance Items"
             },
             {
+                "priority": 5,
                 "pattern": "^docs(.|\n)*$",
                 "kind": "Documentation"
             }
