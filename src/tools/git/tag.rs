@@ -6,5 +6,6 @@ pub fn tag(name: &str, message: &str) -> Result<(), Alert> {
         "git",
         ["tag", "-a", name, "-m", &format!("{} {}", message, name)],
     )?;
+    run_command("git", ["push", "--tags"])?;
     Ok(())
 }
