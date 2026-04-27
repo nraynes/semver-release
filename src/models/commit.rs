@@ -1,16 +1,80 @@
 use crate::models::Alert;
 use chrono::{DateTime, FixedOffset};
 use derive_getters::Getters;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{self, Display, Formatter};
 
 const COMMIT_TIME_FORMAT: &str = "%a %b %d %H:%M:%S %Y %z";
 
-#[derive(Clone, Debug, Getters)]
+mod datetime_ser {
+    use serde::de;
+
+    use super::*;
+
+    pub fn serialize<S>(ext: &DateTime<FixedOffset>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&ext.to_string())
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<FixedOffset>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        let dt = match DateTime::parse_from_str(&s, COMMIT_TIME_FORMAT) {
+            Ok(v) => v,
+            Err(e) => return Err(de::Error::custom(e.to_string())),
+        };
+        Ok(dt)
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, Getters)]
 pub struct Commit {
     id: String,
     author: String,
+
+    #[serde(with = "datetime_ser")]
     timestamp: DateTime<FixedOffset>,
+
     message: String,
+}
+
+impl Ord for Commit {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        if self.message > other.message {
+            return std::cmp::Ordering::Greater;
+        } else if self.message < other.message {
+            return std::cmp::Ordering::Less;
+        }
+        std::cmp::Ordering::Equal
+    }
+}
+
+impl Eq for Commit {}
+
+impl PartialOrd for Commit {
+    fn ge(&self, other: &Self) -> bool {
+        self.message >= other.message
+    }
+
+    fn gt(&self, other: &Self) -> bool {
+        self.message > other.message
+    }
+
+    fn le(&self, other: &Self) -> bool {
+        self.message <= other.message
+    }
+
+    fn lt(&self, other: &Self) -> bool {
+        self.message < other.message
+    }
+
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl PartialEq for Commit {

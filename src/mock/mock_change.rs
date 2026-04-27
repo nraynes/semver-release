@@ -3,10 +3,11 @@ pub mod change {
     use crate::Change;
     use serde_json::json;
 
-    pub fn create(pattern: &str, kind: &str) -> Change {
-        Change::from(&json!({
+    pub fn create(pattern: &str, kind: &str, priority: u32) -> Change {
+        serde_json::from_value(json!({
             "pattern": pattern,
-            "kind": kind
+            "kind": kind,
+            "priority": priority
         }))
         .unwrap()
     }

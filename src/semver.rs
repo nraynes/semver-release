@@ -1,10 +1,10 @@
-use crate::{Alert, Changelog, Config, Version, analyzer, git, parse_args};
-use indexmap::IndexMap;
+use crate::{Alert, Changelog, Config, Version, analyzer, git, parse_args, plugins};
 use r_log::Logger;
+use std::collections::HashMap;
 
 pub struct SemVer {
     config: Config,
-    env: IndexMap<String, String>,
+    env: HashMap<String, String>,
     logger: Logger,
 }
 
@@ -12,7 +12,7 @@ impl SemVer {
     /// Initialize the SemVer object. This will attempt to parse arguments, read the config,
     /// setup the logger, and anything else that needs to happen before the release stage.
     /// If any of these cannot happen for some reason, an Err variant will be returned.
-    pub fn init(args: Vec<String>, env: IndexMap<String, String>) -> Result<Self, Alert> {
+    pub fn init(args: Vec<String>, env: HashMap<String, String>) -> Result<Self, Alert> {
         let config_file_path: String = parse_args(args);
         let config = Config::load_from_file(config_file_path)?;
         let logger = Logger::new(config.log_level().clone());
@@ -72,6 +72,9 @@ impl SemVer {
             let changelog = Changelog::generate(&version);
             changelog.save(self.config.changelog_location())?;
         }
+
+        // Run plugins.
+        plugins::run(&self.config, &self.logger, &version)?;
 
         // Commit the changes.
         if *self.config.commit_changes() {

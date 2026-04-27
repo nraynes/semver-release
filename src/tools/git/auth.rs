@@ -1,8 +1,8 @@
 pub mod github;
 
-use indexmap::IndexMap;
 use r_log::Logger;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 use crate::Alert;
 
@@ -16,7 +16,7 @@ impl Auth {
     /// Supplies the environment variables from the running environment.
     pub fn authenticate(
         &self,
-        env: &IndexMap<String, String>,
+        env: &HashMap<String, String>,
         logger: &Logger,
     ) -> Result<(), Alert> {
         match self {

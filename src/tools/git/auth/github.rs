@@ -1,10 +1,10 @@
-use indexmap::IndexMap;
 use r_log::Logger;
+use std::collections::HashMap;
 
 use crate::{Alert, run_command};
 
 /// Caches credentials in git for authenticating with Github as remote origin.
-pub fn set_remote(env: &IndexMap<String, String>, logger: &Logger) -> Result<(), Alert> {
+pub fn set_remote(env: &HashMap<String, String>, logger: &Logger) -> Result<(), Alert> {
     logger.info("Authenticating with Github");
     let actor = env
         .get("GITHUB_ACTOR")
