@@ -1,6 +1,6 @@
-# Version: v0.1.0
+# Version: v0.0.0
 
-## Features
+## Maintenance Items
 
-- feat: added debug statement
+- chore: added output capture
 
