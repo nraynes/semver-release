@@ -44,7 +44,7 @@ impl SemVer {
 
         // Get the commits since the last version, or all of them if no tag was present.
         self.logger.info("Acquiring commits");
-        let commits = git::get_commits(latest_tag)?;
+        let commits = git::get_commits(&latest_tag)?;
 
         // Analyze the list of commits.
         self.logger.info("Analyzing commits");
@@ -57,9 +57,14 @@ impl SemVer {
             current_version,
         )?;
 
-        // Tag with the new version.
-        self.logger.info("Tagging version");
-        git::tag(&version.get(), "tag version update")?;
+        // Tag with the new version if new version exists.
+        if match latest_tag {
+            Some(v) => version.get() != v,
+            None => true,
+        } {
+            self.logger.info("Tagging version");
+            git::tag(&version.get(), "tag version update")?;
+        }
 
         // Generate the changelog.
         if *self.config.generate_changelog() {
