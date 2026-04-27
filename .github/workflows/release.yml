@@ -21,4 +21,4 @@ jobs:
       - name: Update Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: sudo chown 755 ./.release/semver && ./.release/semver
+        run: ./.release/semver_linux

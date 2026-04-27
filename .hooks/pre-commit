@@ -28,3 +28,6 @@ cargo doc
 
 # Run tests
 cargo test
+
+# Run release build for Linux target
+cargo build --release --target x86_64-unknown-linux-gnu
