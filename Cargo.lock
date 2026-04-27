@@ -68,6 +68,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 
 [[package]]
+name = "derive-getters"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "74ef43543e701c01ad77d3a5922755c6a1d71b22d942cb8042be4994b380caff"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -188,9 +199,12 @@ dependencies = [
 
 [[package]]
 name = "r_log"
-version = "0.1.2"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "acc41749bdc2e63f1cdfd1e036e2c63b70a57d6ebb917cf49c8112fecfeba958"
+checksum = "ccf15c1b5f69d5046c386876d932dfdb52f452b4507d32f1a155dbcf213ce95d"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "regex"
@@ -232,9 +246,11 @@ name = "semver-release"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "derive-getters",
  "indexmap",
  "r_log",
  "regex",
+ "serde",
  "serde_json",
 ]
 
@@ -245,6 +261,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e"
 dependencies = [
  "serde_core",
+ "serde_derive",
 ]
 
 [[package]]

@@ -1,33 +1,41 @@
 {
     "release_branch": "master",
-    "major_changes": [
-        {
-            "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
-            "kind": "BREAKING CHANGES"
-        }
-    ],
-    "minor_changes": [
-        {
-            "pattern": "^feat(.|\n)*$",
-            "kind": "Features"
-        }
-    ],
-    "patch_changes": [
-        {
-            "pattern": "^fix(.|\n)*$",
-            "kind": "Patches"
-        }
-    ],
-    "other_changes": [
-        {
-            "pattern": "^chore(.|\n)*$",
-            "kind": "Maintenance Items"
-        },
-        {
-            "pattern": "^docs(.|\n)*$",
-            "kind": "Documentation"
-        }
-    ],
+    "major_changes": {
+        "changes": [
+            {
+                "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
+                "kind": "BREAKING CHANGES"
+            }
+        ]
+    },
+    "minor_changes": {
+        "changes": [
+            {
+                "pattern": "^feat(.|\n)*$",
+                "kind": "Features"
+            }
+        ]
+    },
+    "patch_changes": {
+        "changes": [
+            {
+                "pattern": "^fix(.|\n)*$",
+                "kind": "Patches"
+            }
+        ]
+    },
+    "other_changes": {
+        "changes": [
+            {
+                "pattern": "^chore(.|\n)*$",
+                "kind": "Maintenance Items"
+            },
+            {
+                "pattern": "^docs(.|\n)*$",
+                "kind": "Documentation"
+            }
+        ]
+    },
     "generate_changelog": true,
     "log_level": "debug",
     "changelog_location": "CHANGELOG.md",

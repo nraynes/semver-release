@@ -1,10 +1,11 @@
 use crate::models::Alert;
 use chrono::{DateTime, FixedOffset};
+use derive_getters::Getters;
 use std::fmt::{self, Display, Formatter};
 
 const COMMIT_TIME_FORMAT: &str = "%a %b %d %H:%M:%S %Y %z";
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Getters)]
 pub struct Commit {
     id: String,
     author: String,
@@ -25,22 +26,6 @@ impl Display for Commit {
 }
 
 impl Commit {
-    pub fn id(&self) -> &str {
-        &self.id
-    }
-
-    pub fn author(&self) -> &str {
-        &self.author
-    }
-
-    pub fn timestamp(&self) -> &DateTime<FixedOffset> {
-        &self.timestamp
-    }
-
-    pub fn message(&self) -> &str {
-        &self.message
-    }
-
     pub fn new(id: &str, author: &str, timestamp: DateTime<FixedOffset>, message: &str) -> Self {
         Commit {
             id: id.to_string(),

@@ -1,12 +1,13 @@
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use crate::models::{Alert, Commit};
 
 /// A pattern that represents a type of change based on a commit message.
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Change {
-    pattern: Regex,
+    pattern: String,
     kind: String,
 }
 
@@ -19,6 +20,11 @@ impl PartialEq for Change {
 impl Change {
     pub fn kind(&self) -> &String {
         &self.kind
+    }
+
+    pub fn pattern(&self) -> Result<Regex, Alert> {
+        let r = Regex::new(&self.pattern)?;
+        Ok(r)
     }
 
     /// Returns a new Change object when supplied with valid parsed json.
@@ -41,15 +47,14 @@ impl Change {
         let packaged_kind = change_map
             .get("kind")
             .ok_or("No kind found in change declaration in config.")?;
-        let pattern_string = packaged_pattern
+        let pattern = packaged_pattern
             .as_str()
             .ok_or("pattern in change declaration in config wrong syntax.")?;
-        let pattern = Regex::new(pattern_string)?;
         let kind = packaged_kind
             .as_str()
             .ok_or("kind in change declaration in config wrong syntax.")?;
         Ok(Change {
-            pattern,
+            pattern: String::from(pattern),
             kind: String::from(kind),
         })
     }
@@ -69,10 +74,14 @@ impl Change {
     /// })).unwrap();
     /// let commit = Commit::new("12345678", "John Doe", DateTime::parse_from_str("Wed Apr 22 19:12:34 2026 -0400", "%a %b %d %H:%M:%S %Y %z").unwrap(), "feat: some commit one\n\nBREAKING CHANGE: this will break the current version.");
     ///
-    /// assert_eq!(change.check(&commit), true);
+    /// assert_eq!(change.check(&commit).is_ok(), true);
     /// ```
-    pub fn check(&self, commit: &Commit) -> bool {
-        self.pattern.is_match(commit.msg())
+    pub fn check(&self, commit: &Commit) -> Result<(), Alert> {
+        let r = self.pattern()?;
+        match r.is_match(commit.msg()) {
+            true => Ok(()),
+            false => Err(Alert::from("Pattern did not match")),
+        }
     }
 }
 
@@ -102,7 +111,7 @@ mod test {
         let change = mock::change::create("^feat(\n|.)*$", "Feature");
         let commit = mock::commit::create("feat(super): the message header");
         let check = change.check(&commit);
-        assert_eq!(check, true);
+        assert_eq!(check.is_ok(), true);
     }
 
     #[test]
@@ -110,7 +119,7 @@ mod test {
         let change = mock::change::create("^fix(\n|.)*$", "Fix");
         let commit = mock::commit::create("fix(super): the message header");
         let check = change.check(&commit);
-        assert_eq!(check, true);
+        assert_eq!(check.is_ok(), true);
     }
 
     #[test]
@@ -118,7 +127,7 @@ mod test {
         let change = mock::change::create("^fix(\n|.)*$", "Fix");
         let commit = mock::commit::create("feat(super): the message header");
         let check = change.check(&commit);
-        assert_eq!(check, false);
+        assert_eq!(check.is_ok(), false);
     }
 
     #[test]
@@ -126,6 +135,6 @@ mod test {
         let change = mock::change::create("^feat(\n|.)*$", "Feature");
         let commit = mock::commit::create("fix(super): the message header");
         let check = change.check(&commit);
-        assert_eq!(check, false);
+        assert_eq!(check.is_ok(), false);
     }
 }

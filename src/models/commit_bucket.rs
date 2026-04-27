@@ -1,10 +1,11 @@
+use derive_getters::Getters;
 use std::fmt::Display;
 
 use crate::Commit;
 
 /// A container for a kind of change pattern that represents a commit that matches said pattern,
 /// as well as a vector of Commit objects that match the pattern for that kind of change.
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct CommitBucket {
     kind: String,
     commits: Vec<Commit>,
@@ -35,14 +36,6 @@ impl Display for CommitBucket {
 }
 
 impl CommitBucket {
-    pub fn kind(&self) -> &String {
-        &self.kind
-    }
-
-    pub fn commits(&self) -> &Vec<Commit> {
-        &self.commits
-    }
-
     pub fn new(kind: &str) -> Self {
         CommitBucket {
             kind: String::from(kind),

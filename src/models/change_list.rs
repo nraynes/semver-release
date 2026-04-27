@@ -1,7 +1,8 @@
 use crate::{Change, Commit};
+use serde::{Deserialize, Serialize};
 
 /// Represents a list of change formats to use while analyzing commits.
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ChangeList {
     changes: Vec<Change>,
 }
@@ -46,7 +47,7 @@ impl ChangeList {
     /// ```
     pub fn check(&self, commit: &Commit) -> Option<String> {
         for change in self.changes.iter() {
-            if change.check(commit) {
+            if change.check(commit).is_ok() {
                 return Some(String::from(change.kind()));
             }
         }
