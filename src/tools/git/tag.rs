@@ -1,5 +1,3 @@
-use std::process::Command;
-
 use crate::{Alert, run_command};
 
 /// Creates a new git tag with a supplied name and message.
