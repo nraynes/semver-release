@@ -2,5 +2,5 @@
 
 ## Maintenance Items
 
-- chore: added output capture
+- chore: added debug line
 
