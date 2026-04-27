@@ -35,7 +35,7 @@ impl Changelog {
     /// ```
     pub fn generate(version: &Version) -> Self {
         Changelog {
-            text: format!("Version: {}\n\n{}", version.get(), version.changes()),
+            text: format!("# Version: {}\n\n{}", version.get(), version.changes()),
         }
     }
 
