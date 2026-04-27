@@ -81,7 +81,7 @@ mod test {
         let changelog = Changelog::generate(&version);
         assert_eq!(
             changelog.text,
-            "Version: v1.9.2\n\n## Feature\n\n- feat(scope): a test header\n- feat(scope): a test header two\n\n## Fix\n\n- fix(scope): a test header three\n\n"
+            "# Version: v1.9.2\n\n## Feature\n\n- feat(scope): a test header\n- feat(scope): a test header two\n\n## Fix\n\n- fix(scope): a test header three\n\n"
         );
     }
 }
