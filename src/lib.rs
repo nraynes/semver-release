@@ -5,23 +5,6 @@
 //! # Examples
 //!
 //! See main.rs in the source code for usage.
-//!
-//! ### Running in the Command Line:
-//!
-//! Be sure to run the file as an executable. On Linux and MacOS, you might need to change its permissions so you can run
-//! it using chmod. It should be rare for you to run this on Windows since this is meant to run in a CI/CD runner,
-//! but if you do for some reason need to it should be executable by default. If it isn't, change it's permissions
-//! by right clicking and selecting properties, then going to the permissions tab.
-//!
-//! ```markdown
-//! semver
-//! ```
-//!
-//! OR
-//!
-//! ```markdown
-//! semver /path/to/config/file.json
-//! ```
 
 mod mock;
 mod models;
