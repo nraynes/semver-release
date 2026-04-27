@@ -24,5 +24,6 @@ pub fn set_remote(env: &IndexMap<String, String>, logger: &Logger) -> Result<(),
             &format!("https://${}:${}@github.com/{}.git", actor, token, repo),
         ],
     )?;
+    run_command("git", ["config", "--global", "user.name", actor])?;
     Ok(())
 }
