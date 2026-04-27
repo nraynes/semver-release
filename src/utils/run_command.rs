@@ -12,6 +12,7 @@ where
     let stderr = String::from_utf8(output.stderr)?;
     let status = output.status.code().ok_or(&stderr)?;
     if status == 0 {
+        println!("StdOut from {}:\n{}", command, stdout);
         return Ok(stdout);
     }
     Err(Alert::from(stderr))

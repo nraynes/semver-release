@@ -3,7 +3,6 @@ use crate::{Alert, models::Commit, run_command};
 /// Returns as a vector of Commit objects.
 pub fn get_commits(branch: &str) -> Result<Vec<Commit>, Alert> {
     let stdout = run_command("git", ["log", branch])?;
-    println!("stdout from git log {}: {}", branch, stdout);
     let mut commit_list: Vec<Commit> = vec![];
     for c in stdout.split("\ncommit ") {
         match Commit::new_from_commit(c.to_string()) {
