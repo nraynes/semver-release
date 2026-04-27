@@ -56,7 +56,7 @@ impl SemVer {
             (current_major, current_minor, current_patch),
         )?;
         self.logger.info("Tagging version");
-        git::tag(&version.get(), "SemVer-Release")?;
+        git::tag(&version.get(), "tag version update")?;
         if *self.config.generate_changelog() {
             self.logger.info("Generating changelog");
             let changelog = Changelog::generate(&version);
