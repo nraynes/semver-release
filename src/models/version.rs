@@ -29,7 +29,7 @@ impl Version {
     /// Parse a string into the appropriate version numbers. Returns a tuple containing
     /// the major, minor, and patch version numbers extracted from the string, if available.
     pub fn parse(version: &str) -> Option<(u32, u32, u32)> {
-        if version.len() < 1 {
+        if version.len() <= 1 {
             return None;
         }
         let separated: Vec<&str> = version[1..].split(".").collect();

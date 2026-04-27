@@ -9,17 +9,6 @@ pub struct SemVer {
 }
 
 impl SemVer {
-    /// Get the current release version. Since SemVer-Release uses git tags to track versions,
-    /// so this is the default. If a git tag can not be found, for example, if a repository has just
-    /// been created and has not had it's first release yet, then versioning starts at 0.0.0.
-    fn current_version(&self) -> (u32, u32, u32) {
-        let latest_tag = match git::latest_tag() {
-            Some(v) => v,
-            None => return (0, 0, 0),
-        };
-        Version::parse(&latest_tag).unwrap_or_default()
-    }
-
     /// Initialize the SemVer object. This will attempt to parse arguments, read the config,
     /// setup the logger, and anything else that needs to happen before the release stage.
     /// If any of these cannot happen for some reason, an Err variant will be returned.
@@ -39,13 +28,25 @@ impl SemVer {
     /// stage and performs the release cycle based on this configuration.
     pub fn release(&self) -> Result<(), Alert> {
         self.logger.info("Starting Release Cycle");
+
+        // Authenticate git with the chosen method.
         self.config
             .git_auth_method()
             .authenticate(&self.env, &self.logger)?;
-        self.logger.info("Acquiring commits");
-        let commits = git::get_commits(self.config.release_branch())?;
+
+        // Get the current version and whether a tag exists already.
         self.logger.info("Getting current version");
-        let (current_major, current_minor, current_patch) = self.current_version();
+        let latest_tag = git::latest_tag();
+        let current_version = match &latest_tag {
+            Some(v) => Version::parse(v).unwrap_or_default(),
+            None => (0, 0, 0),
+        };
+
+        // Get the commits since the last version, or all of them if no tag was present.
+        self.logger.info("Acquiring commits");
+        let commits = git::get_commits(self.config.release_branch(), latest_tag)?;
+
+        // Analyze the list of commits.
         self.logger.info("Analyzing commits");
         let version = analyzer::analyze_commits(
             &commits,
@@ -53,23 +54,32 @@ impl SemVer {
             self.config.minor_changes(),
             self.config.patch_changes(),
             self.config.other_changes(),
-            (current_major, current_minor, current_patch),
+            current_version,
         )?;
+
+        // Tag with the new version.
         self.logger.info("Tagging version");
         git::tag(&version.get(), "tag version update")?;
+
+        // Generate the changelog.
         if *self.config.generate_changelog() {
             self.logger.info("Generating changelog");
             let changelog = Changelog::generate(&version);
             changelog.save(self.config.changelog_location())?;
         }
+
+        // Commit the changes.
         if *self.config.commit_changes() {
             self.logger.info("Committing changes");
             git::commit_all(&format!("semver_release_version_update {}", version.get()))?;
         }
+
+        // Push the changes.
         if *self.config.push_changes() {
             self.logger.info("Pushing changes");
             git::push()?;
         }
+
         self.logger.info("Done");
         Ok(())
     }
