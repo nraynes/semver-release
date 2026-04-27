@@ -5,3 +5,4 @@ This is a simple semantic versioning tool written in Rust that allows semantic v
 A release binary will be made available in the Github repository for download that you can just run as a command line tool in a github action to perform semantic releases.
 
 
+
