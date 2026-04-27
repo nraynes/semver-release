@@ -1,6 +1,6 @@
-# Version: v0.0.0
+# Version: v0.0.1
 
-## Maintenance Items
+## Patches
 
-- chore: added some things
+- fix: added push tags
 
