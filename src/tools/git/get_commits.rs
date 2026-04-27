@@ -6,7 +6,10 @@ pub fn get_commits(branch: &str) -> Result<Vec<Commit>, Alert> {
     let mut commit_list: Vec<Commit> = vec![];
     for c in stdout.split("\ncommit ") {
         match Commit::new_from_commit(c.to_string()) {
-            Ok(v) => commit_list.push(v),
+            Ok(v) => {
+                println!("{}", v);
+                commit_list.push(v);
+            }
             _ => continue,
         }
     }
