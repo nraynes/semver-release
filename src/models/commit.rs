@@ -1,15 +1,44 @@
 use crate::models::Alert;
 use chrono::{DateTime, FixedOffset};
 use derive_getters::Getters;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{self, Display, Formatter};
 
 const COMMIT_TIME_FORMAT: &str = "%a %b %d %H:%M:%S %Y %z";
 
-#[derive(Clone, Debug, Getters)]
+mod datetime_ser {
+    use serde::de;
+
+    use super::*;
+
+    pub fn serialize<S>(ext: &DateTime<FixedOffset>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&ext.to_string())
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<FixedOffset>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        let dt = match DateTime::parse_from_str(&s, COMMIT_TIME_FORMAT) {
+            Ok(v) => v,
+            Err(e) => return Err(de::Error::custom(e.to_string())),
+        };
+        Ok(dt)
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, Getters)]
 pub struct Commit {
     id: String,
     author: String,
+
+    #[serde(with = "datetime_ser")]
     timestamp: DateTime<FixedOffset>,
+
     message: String,
 }
 

@@ -1,11 +1,11 @@
-use derive_getters::Getters;
-use std::fmt::Display;
-
 use crate::Commit;
+use derive_getters::Getters;
+use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 /// A container for a kind of change pattern that represents a commit that matches said pattern,
 /// as well as a vector of Commit objects that match the pattern for that kind of change.
-#[derive(Debug, Getters)]
+#[derive(Serialize, Deserialize, Debug, Getters)]
 pub struct CommitBucket {
     kind: String,
     commits: Vec<Commit>,

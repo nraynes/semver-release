@@ -1,11 +1,11 @@
-use std::fmt::Display;
-
-use indexmap::IndexMap;
+use std::{collections::HashMap, fmt::Display};
 
 use crate::{Alert, Commit, CommitBucket};
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct CommitMap {
-    map: IndexMap<String, CommitBucket>,
+    map: HashMap<String, CommitBucket>,
 }
 
 impl Display for CommitMap {
@@ -26,7 +26,7 @@ impl Default for CommitMap {
 impl CommitMap {
     pub fn new() -> Self {
         CommitMap {
-            map: IndexMap::new(),
+            map: HashMap::new(),
         }
     }
 
@@ -95,7 +95,7 @@ mod test {
         let commit_map_str = format!("{}", commit_map);
         assert_eq!(
             commit_map_str,
-            "## Feature\n\n- feat(scope): a test header\n- feat(scope): a test header two\n\n## Fix\n\n- fix(scope): a test header three\n\n"
+            "## Fix\n\n- fix(scope): a test header three\n\n## Feature\n\n- feat(scope): a test header\n- feat(scope): a test header two\n\n"
         );
     }
 }
