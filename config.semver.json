@@ -37,9 +37,9 @@
         ]
     },
     "generate_changelog": true,
-    "log_level": "debug",
+    "log_level": "DEBUG",
     "changelog_location": "CHANGELOG.md",
-    "git_auth_method": "github",
+    "git_auth_method": "GITHUB",
     "commit_changes": true,
     "push_changes": true
 }
