@@ -1,9 +1,7 @@
-use std::process::Command;
-
 use indexmap::IndexMap;
 use r_log::Logger;
 
-use crate::Alert;
+use crate::{Alert, run_command};
 
 /// Caches credentials in git for authenticating with Github as remote origin.
 pub fn set_remote(env: &IndexMap<String, String>, logger: &Logger) -> Result<(), Alert> {
@@ -17,13 +15,14 @@ pub fn set_remote(env: &IndexMap<String, String>, logger: &Logger) -> Result<(),
     let repo = env
         .get("GITHUB_REPOSITORY")
         .ok_or("GITHUB_REPOSITORY not in environment variables.")?;
-    Command::new("git")
-        .args([
+    run_command(
+        "git",
+        [
             "remote",
             "set-url",
             "origin",
             &format!("https://${}:${}@github.com/{}.git", actor, token, repo),
-        ])
-        .output()?;
+        ],
+    )?;
     Ok(())
 }

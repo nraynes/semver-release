@@ -75,6 +75,20 @@ impl From<&str> for Alert {
     }
 }
 
+impl From<String> for Alert {
+    /// String
+    fn from(value: String) -> Self {
+        Alert { val: value }
+    }
+}
+
+impl From<&String> for Alert {
+    /// &String
+    fn from(value: &String) -> Self {
+        Alert { val: value.clone() }
+    }
+}
+
 impl Display for Alert {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "{}", self.val)

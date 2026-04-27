@@ -1,11 +1,9 @@
 use std::process::Command;
 
-use crate::Alert;
+use crate::{Alert, run_command};
 
 /// Creates a new git tag with a supplied name and message.
 pub fn tag(name: &str, message: &str) -> Result<(), Alert> {
-    Command::new("git")
-        .args(["tag", "-a", name, "-m", message])
-        .output()?;
+    run_command("git", ["tag", "-a", name, "-m", message])?;
     Ok(())
 }

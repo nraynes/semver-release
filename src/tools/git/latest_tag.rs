@@ -1,10 +1,6 @@
-use std::process::Command;
+use crate::run_command;
 
 /// Gets the latest git tag from the git repository.
 pub fn latest_tag() -> Option<String> {
-    let command_output = Command::new("git")
-        .args(["describe", "--abbrev=0", "--tags"])
-        .output()
-        .ok()?;
-    String::from_utf8(command_output.stdout).ok()
+    run_command("git", ["describe", "--abbrev=0", "--tags"]).ok()
 }
