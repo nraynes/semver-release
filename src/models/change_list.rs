@@ -29,12 +29,10 @@ impl ChangeList {
     /// Checks a commit to see if it matches any of the changes in this list and returns the
     /// kind of change it matched.
     pub fn check(&self, commit: &Commit) -> Option<&Change> {
-        for change in self.changes.iter() {
-            if change.check(commit).is_ok() {
-                return Some(&change);
-            }
-        }
-        None
+        self.changes
+            .iter()
+            .find(|&change| change.check(commit).is_ok())
+            .map(|v| v as _)
     }
 }
 

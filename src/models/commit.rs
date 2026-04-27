@@ -73,14 +73,7 @@ impl PartialOrd for Commit {
     }
 
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        if self.message == other.message {
-            return Some(std::cmp::Ordering::Equal);
-        } else if self.message > other.message {
-            return Some(std::cmp::Ordering::Greater);
-        } else if self.message < other.message {
-            return Some(std::cmp::Ordering::Less);
-        }
-        None
+        Some(self.cmp(other))
     }
 }
 
