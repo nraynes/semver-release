@@ -37,11 +37,11 @@ impl SemVer {
 
         // Fetch commits from remote origin.
         self.logger.info("Fetching commit history");
-        git::fetch()?;
+        git::fetch(&self.logger)?;
 
         // Get the current version and whether a tag exists already.
         self.logger.info("Getting current version");
-        let latest_tag = git::latest_tag();
+        let latest_tag = git::latest_tag(&self.logger);
         let current_version = match &latest_tag {
             Some(v) => Version::parse(v).unwrap_or_default(),
             None => (0, 0, 0),
@@ -49,7 +49,7 @@ impl SemVer {
 
         // Get the commits since the last version, or all of them if no tag was present.
         self.logger.info("Acquiring commits");
-        let commits = git::get_commits(&latest_tag)?;
+        let commits = git::get_commits(&latest_tag, &self.logger)?;
 
         // Analyze the list of commits.
         self.logger.info("Analyzing commits");
@@ -68,7 +68,7 @@ impl SemVer {
             None => true,
         } {
             self.logger.info("Tagging version");
-            git::tag(&version.get(), "tag version update")?;
+            git::tag(&version.get(), "tag version update", &self.logger)?;
         }
 
         // Generate the changelog.
@@ -84,13 +84,16 @@ impl SemVer {
         // Commit the changes.
         if *self.config.commit_changes() {
             self.logger.info("Committing changes");
-            git::commit_all(&format!("semver_release_version_update {}", version.get()))?;
+            git::commit_all(
+                &format!("semver_release_version_update {}", version.get()),
+                &self.logger,
+            )?;
         }
 
         // Push the changes.
         if *self.config.push_changes() {
             self.logger.info("Pushing changes");
-            git::push()?;
+            git::push(&self.logger)?;
         }
 
         self.logger.info("Done");

@@ -23,7 +23,12 @@ pub fn set_remote(env: &HashMap<String, String>, logger: &Logger) -> Result<(), 
             "origin",
             &format!("https://${}:${}@github.com/{}.git", actor, token, repo),
         ],
+        Some(logger),
     )?;
-    run_command("git", ["config", "--global", "user.name", actor])?;
+    run_command(
+        "git",
+        ["config", "--global", "user.name", actor],
+        Some(logger),
+    )?;
     Ok(())
 }
