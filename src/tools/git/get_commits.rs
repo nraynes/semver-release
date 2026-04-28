@@ -1,5 +1,5 @@
-use crate::run_command;
-use semver_common::{Alert, Commit};
+use semver_common::{Alert, Commit, run_command};
+
 /// Gets the commits in the history of the supplied branch.
 /// Returns as a vector of Commit objects.
 pub fn get_commits(latest_tag: &Option<String>) -> Result<Vec<Commit>, Alert> {

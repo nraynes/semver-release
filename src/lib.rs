@@ -18,4 +18,3 @@ pub use tools::analyzer;
 pub use tools::git;
 pub use utils::parse_args;
 pub use utils::plugins;
-pub use utils::run_command;

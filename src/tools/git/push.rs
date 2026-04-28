@@ -1,5 +1,4 @@
-use crate::run_command;
-use semver_common::Alert;
+use semver_common::{Alert, run_command};
 
 /// Pushes any commited changes in git to the authenticated remote repository.
 pub fn push() -> Result<(), Alert> {

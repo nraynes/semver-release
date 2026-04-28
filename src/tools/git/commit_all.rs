@@ -1,5 +1,4 @@
-use crate::run_command;
-use semver_common::Alert;
+use semver_common::{Alert, run_command};
 
 /// Stages all changes in git and commits those changes with a supplied message.
 pub fn commit_all(message: &str) -> Result<(), Alert> {

@@ -1,4 +1,4 @@
-use crate::run_command;
+use semver_common::run_command;
 
 /// Gets the latest git tag from the git repository.
 pub fn latest_tag() -> Option<String> {
