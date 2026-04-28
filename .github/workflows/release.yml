@@ -22,4 +22,4 @@ jobs:
       - name: Update Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./.release/semver_linux
+        run: ./.release/semver-linux
