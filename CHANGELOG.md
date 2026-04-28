@@ -1,6 +1,6 @@
-# Version: v0.16.0
+# Version: v0.17.0
 
-## Maintenance Items
+## Features
 
-- chore: updated release bin
+- feat: updated deps
 
