@@ -1,10 +1,6 @@
-# Version: v0.14.14
+# Version: v0.15.14
 
-## Patches
+## Features
 
-- fix: updated logger
-
-## Maintenance Items
-
-- chore: added quotes around plugin command args
+- feat: bumped version
 
