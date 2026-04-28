@@ -25,8 +25,7 @@ cargo test
 # Run release build for Linux target
 target_linker="$(which x86_64-unknown-linux-gnu-gcc)"
 cargo build --release --target x86_64-unknown-linux-gnu --config "target.x86_64-unknown-linux-gnu.linker = '$target_linker'"
-mv target/x86_64-unknown-linux-gnu/release/semver-release target/x86_64-unknown-linux-gnu/release/semver_linux
-cp target/x86_64-unknown-linux-gnu/release/semver_linux .release/semver_linux
+cp target/x86_64-unknown-linux-gnu/release/semver-release .release/semver_linux
 
 # Get the diff from git after formatting
 diff_post=($(git diff --name-only))

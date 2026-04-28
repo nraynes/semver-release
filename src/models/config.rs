@@ -1,7 +1,6 @@
-use crate::git;
 use derive_getters::Getters;
 use r_log::LogLevel;
-use semver_common::{Alert, ChangeList};
+use semver_common::{Alert, ChangeList, git};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::fs;
@@ -74,8 +73,7 @@ impl Config {
 mod test {
     use serde_json::{Value, json};
 
-    use crate::git::auth::Auth;
-    use semver_common::mock;
+    use semver_common::{git::auth::Auth, mock};
 
     use super::*;
 

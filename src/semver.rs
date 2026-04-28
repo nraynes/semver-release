@@ -1,6 +1,6 @@
-use crate::{Changelog, Config, analyzer, git, parse_args, plugins};
+use crate::{Changelog, Config, analyzer, parse_args, plugins};
 use r_log::Logger;
-use semver_common::{Alert, Version};
+use semver_common::{Alert, Version, git};
 use std::collections::HashMap;
 
 pub struct SemVer {
