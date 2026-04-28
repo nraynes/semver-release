@@ -9,9 +9,9 @@ pub fn run(conf: &Config, logger: &Logger, version: &Version) -> Result<(), Aler
         run_command(
             &format!("{}/{}", conf.plugin_location(), plugin_name),
             [
-                &format!("'{}'", &serde_json::to_string(short_config)?),
-                &format!("'{}'", &serde_json::to_string(version)?),
-                &format!("'{}'", &conf.log_level().to_string()),
+                &serde_json::to_string(short_config)?,
+                &serde_json::to_string(version)?,
+                &conf.log_level().to_string(),
             ],
             Some(logger),
         )?;
