@@ -1,6 +1,6 @@
 # Version: v0.14.13
 
-## Features
+## Maintenance Items
 
-- feat: added default plugin location to config
+- chore: added quotes around plugin command args
 
