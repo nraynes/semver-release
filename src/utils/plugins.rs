@@ -11,6 +11,7 @@ pub fn run(conf: &Config, logger: &Logger, version: &Version) -> Result<(), Aler
             [
                 &serde_json::to_string(short_config)?,
                 &serde_json::to_string(version)?,
+                &conf.log_level().to_string(),
             ],
             Some(logger),
         )?;
