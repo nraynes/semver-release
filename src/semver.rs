@@ -35,6 +35,9 @@ impl SemVer {
             .git_auth_method()
             .authenticate(&self.env, &self.logger)?;
 
+        // Fetch commits from remote origin.
+        git::fetch()?;
+
         // Get the current version and whether a tag exists already.
         self.logger.info("Getting current version");
         let latest_tag = git::latest_tag();
