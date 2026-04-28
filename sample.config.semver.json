@@ -47,5 +47,6 @@
     "git_auth_method": "GITHUB",
     "commit_changes": true,
     "push_changes": true,
+    "plugin_location": ".release",
     "plugins": {}
 }

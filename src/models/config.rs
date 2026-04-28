@@ -22,6 +22,10 @@ fn default_changelog_location() -> String {
     String::from("CHANGELOG.md")
 }
 
+fn default_plugin_location() -> String {
+    String::from(".release")
+}
+
 /// Configuration object to hold all the values from the global configuration file.
 #[derive(Serialize, Deserialize, Debug, Getters)]
 pub struct Config {
@@ -49,6 +53,9 @@ pub struct Config {
 
     #[serde(default = "default_true")]
     push_changes: bool,
+
+    #[serde(default = "default_plugin_location")]
+    plugin_location: String,
 
     plugins: Map<String, Value>,
 }
