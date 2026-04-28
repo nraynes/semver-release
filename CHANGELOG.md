@@ -1,11 +1,7 @@
-# Version: v0.15.15
+# Version: v0.15.17
 
 ## Patches
 
-- fix: fixed plugin command
-
-## Maintenance Items
-
-- chore: update release bin
-- chore: updated version and modified release name
+- fix: fixed bug with git commit
+- fix: fixed bug with version updates
 
