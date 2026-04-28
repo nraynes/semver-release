@@ -48,5 +48,11 @@
     "commit_changes": true,
     "push_changes": true,
     "plugin_location": ".release",
-    "plugins": {}
+    "plugins": {
+        "semver-cargo": {
+            "set_version": true,
+            "publish": true,
+            "act_on_no_update": false
+        }
+    }
 }
