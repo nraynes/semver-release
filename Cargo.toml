@@ -1,6 +1,6 @@
 [package]
 name = "semver-release"
-version = "0.13.7"
+version = "0.13.8"
 edition = "2024"
 authors = ["Nicholas Raynes"]
 description = "A simple semantic versioning tool. Can be used in a release workflow as a command line tool with plugins."
