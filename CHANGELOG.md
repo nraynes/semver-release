@@ -6,3 +6,7 @@
 - chore: added log
 - chore: added v6 checkout to release
 
+## Documentation
+
+- docs: added something
+
