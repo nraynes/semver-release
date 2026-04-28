@@ -19,11 +19,14 @@ pub fn analyze_commits(
     for commit in commits.iter() {
         if let Some(change) = major_changes.check(commit) {
             major += 1;
+            minor = 0;
+            patch = 0;
             changes.insert(change, commit.clone())?;
             continue;
         }
         if let Some(change) = minor_changes.check(commit) {
             minor += 1;
+            patch = 0;
             changes.insert(change, commit.clone())?;
             continue;
         }
