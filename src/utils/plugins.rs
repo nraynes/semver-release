@@ -15,6 +15,7 @@ pub fn run(conf: &Config, logger: &Logger, version: &Version) -> Result<(), Aler
             ],
             Some(logger),
         )?;
+        logger.info(&format!("Plugin {} done.", plugin_name));
     }
     Ok(())
 }

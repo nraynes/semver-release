@@ -84,10 +84,15 @@ impl SemVer {
         // Commit the changes.
         if *self.config.commit_changes() {
             self.logger.info("Committing changes");
-            git::commit_all(
+            match git::commit_all(
                 &format!("semver_release_version_update {}", version.get()),
                 &self.logger,
-            )?;
+            ) {
+                Ok(_) => self.logger.debug("Committed changes successfully."),
+                Err(e) => self
+                    .logger
+                    .warning(&format!("git commit returned non-zero exit code: {}", e)),
+            };
         }
 
         // Push the changes.

@@ -221,9 +221,9 @@ checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
 
 [[package]]
 name = "semver-common"
-version = "0.6.8"
+version = "0.6.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fef36fa88c38c61fba6e729be7a538d0b7bc9f9b1903be72ce57d7eae5ae688a"
+checksum = "db69adb0aed7c9cdcfc7f9c5934df0c2fae495c9fa2563914a9c82a7594031dd"
 dependencies = [
  "chrono",
  "derive-getters",
