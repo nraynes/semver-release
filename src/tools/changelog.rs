@@ -1,4 +1,4 @@
-use crate::{Alert, Version};
+use semver_common::{Alert, Version};
 use std::fs;
 
 pub struct Changelog {
@@ -22,7 +22,7 @@ impl Changelog {
 
 #[cfg(test)]
 mod test {
-    use crate::tests::mock;
+    use semver_common::mock;
 
     use super::*;
 

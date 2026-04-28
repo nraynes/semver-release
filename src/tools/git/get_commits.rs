@@ -1,8 +1,9 @@
-use crate::{Alert, models::Commit, run_command};
+use crate::run_command;
+use semver_common::{Alert, Commit};
 /// Gets the commits in the history of the supplied branch.
 /// Returns as a vector of Commit objects.
 pub fn get_commits(latest_tag: &Option<String>) -> Result<Vec<Commit>, Alert> {
-    let stdout = match latest_tag {
+    let stdout: String = match latest_tag {
         None => run_command("git", ["log"])?,
         Some(v) => {
             let tag_arg = format!("{}..HEAD", v);
@@ -13,7 +14,7 @@ pub fn get_commits(latest_tag: &Option<String>) -> Result<Vec<Commit>, Alert> {
     for c in stdout.split("\ncommit ") {
         match Commit::new_from_commit(c.to_string()) {
             Ok(v) => commit_list.push(v),
-            _ => continue,
+            Err(_) => continue,
         }
     }
     Ok(commit_list)

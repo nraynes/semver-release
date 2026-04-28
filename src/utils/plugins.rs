@@ -1,6 +1,7 @@
 use r_log::Logger;
 
-use crate::{Alert, Config, Version, utils::run_command};
+use crate::{Config, utils::run_command};
+use semver_common::{Alert, Version};
 
 pub fn run(conf: &Config, logger: &Logger, version: &Version) -> Result<(), Alert> {
     for (plugin_name, short_config) in conf.plugins().iter() {

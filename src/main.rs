@@ -1,4 +1,4 @@
-use semver_release::Alert;
+use semver_common::Alert;
 use semver_release::SemVer;
 use std::collections::HashMap;
 use std::env::{args, vars};

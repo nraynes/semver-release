@@ -1,4 +1,5 @@
-use crate::{Alert, run_command};
+use crate::run_command;
+use semver_common::Alert;
 
 /// Creates a new git tag with a supplied name and message.
 pub fn tag(name: &str, message: &str) -> Result<(), Alert> {

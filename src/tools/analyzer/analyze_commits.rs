@@ -1,4 +1,4 @@
-use crate::{Alert, ChangeList, Commit, CommitMap, Version};
+use semver_common::{Alert, ChangeList, Commit, CommitMap, Version};
 
 /// Analyzes a list of commits against a set of patterns that define whether a commit message counts
 /// as a major, minor, or patch version upgrade. Saves all matched commits including commits that match other
@@ -43,7 +43,7 @@ pub fn analyze_commits(
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::tests::mock;
+    use semver_common::mock;
 
     #[test]
     fn test_analyze_commits_valid() {

@@ -1,6 +1,6 @@
 use std::{ffi::OsStr, process::Command};
 
-use crate::Alert;
+use semver_common::Alert;
 
 pub fn run_command<I, S>(command: &str, args: I) -> Result<String, Alert>
 where

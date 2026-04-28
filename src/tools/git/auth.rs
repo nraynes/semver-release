@@ -4,7 +4,7 @@ use r_log::Logger;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::Alert;
+use semver_common::Alert;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub enum Auth {

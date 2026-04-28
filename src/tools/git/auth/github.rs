@@ -1,7 +1,8 @@
 use r_log::Logger;
 use std::collections::HashMap;
 
-use crate::{Alert, run_command};
+use crate::run_command;
+use semver_common::Alert;
 
 /// Caches credentials in git for authenticating with Github as remote origin.
 pub fn set_remote(env: &HashMap<String, String>, logger: &Logger) -> Result<(), Alert> {
