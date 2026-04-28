@@ -1,10 +1,10 @@
-# Version: v0.13.7
+# Version: v0.13.8
 
 ## Patches
 
-- fix: updated version
+- fix: adding fix for correct version
 
 ## Maintenance Items
 
-- chore: update version
+- chore: updated version
 
