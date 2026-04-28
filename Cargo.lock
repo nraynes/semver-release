@@ -221,12 +221,13 @@ checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
 
 [[package]]
 name = "semver-common"
-version = "0.2.2"
+version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b4c9e8d0ffde630f71ced6f57d0ae6ecc05a429eb69e0e869f1f0d7a52d8810b"
+checksum = "deacf48115a37c5906769f1072f60a992cd499010bd9e216d304c2ec4af3fabd"
 dependencies = [
  "chrono",
  "derive-getters",
+ "r_log",
  "regex",
  "serde",
  "serde_json",
@@ -234,7 +235,7 @@ dependencies = [
 
 [[package]]
 name = "semver-release"
-version = "0.13.9"
+version = "0.13.10"
 dependencies = [
  "chrono",
  "derive-getters",
