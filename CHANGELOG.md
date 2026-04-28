@@ -1,6 +1,6 @@
-# Version: v0.13.13
+# Version: v0.14.13
 
-## Patches
+## Features
 
-- fix: added loglevel to plugin
+- feat: added default plugin location to config
 
