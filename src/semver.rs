@@ -36,6 +36,7 @@ impl SemVer {
             .authenticate(&self.env, &self.logger)?;
 
         // Fetch commits from remote origin.
+        self.logger.info("Fetching commit history");
         git::fetch()?;
 
         // Get the current version and whether a tag exists already.
