@@ -1,7 +1,6 @@
-# Version: v0.15.17
+# Version: v0.16.0
 
-## Patches
+## Features
 
-- fix: fixed bug with git commit
-- fix: fixed bug with version updates
+- feat: added arg to run plugins
 
