@@ -1,6 +1,6 @@
-# Version: v0.13.12
+# Version: v0.13.13
 
 ## Patches
 
-- fix: updated common version again
+- fix: added loglevel to plugin
 
