@@ -234,7 +234,7 @@ dependencies = [
 
 [[package]]
 name = "semver-release"
-version = "0.13.6"
+version = "0.13.7"
 dependencies = [
  "chrono",
  "derive-getters",
