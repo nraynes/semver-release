@@ -1,4 +1,8 @@
-# Version: v0.14.13
+# Version: v0.14.14
+
+## Patches
+
+- fix: updated logger
 
 ## Maintenance Items
 
