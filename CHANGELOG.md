@@ -1,4 +1,8 @@
-# Version: v0.13.6
+# Version: v0.13.7
+
+## Patches
+
+- fix: updated version
 
 ## Maintenance Items
 
