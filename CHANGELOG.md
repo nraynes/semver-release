@@ -1,10 +1,10 @@
-# Version: v0.13.8
+# Version: v0.13.9
 
 ## Patches
 
-- fix: adding fix for correct version
+- fix: update version
 
 ## Maintenance Items
 
-- chore: updated version
+- chore: added git fetch
 
