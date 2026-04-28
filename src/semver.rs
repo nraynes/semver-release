@@ -63,10 +63,11 @@ impl SemVer {
         )?;
 
         // Tag with the new version if new version exists.
-        if match latest_tag {
+        let updated = match latest_tag {
             Some(v) => version.get() != v,
             None => true,
-        } {
+        };
+        if updated {
             self.logger.info("Tagging version");
             git::tag(&version.get(), "tag version update", &self.logger)?;
         }
@@ -79,7 +80,7 @@ impl SemVer {
         }
 
         // Run plugins.
-        plugins::run(&self.config, &self.logger, &version)?;
+        plugins::run(&self.config, &self.logger, &version, updated)?;
 
         // Commit the changes.
         if *self.config.commit_changes() {
