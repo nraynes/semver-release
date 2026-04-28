@@ -1,6 +1,6 @@
 # Version: v0.16.0
 
-## Features
+## Maintenance Items
 
-- feat: added arg to run plugins
+- chore: updated release bin
 
