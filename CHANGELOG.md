@@ -4,6 +4,7 @@
 
 - chore: added fetch tags
 - chore: added log
+- chore: added sample config
 - chore: added v6 checkout to release
 
 ## Documentation
