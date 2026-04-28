@@ -105,7 +105,7 @@ mod test {
         let expected_chore_changes = vec![mock::commit::create("chore: some maintenance stuff")];
         let expected_docs_changes = vec![mock::commit::create("docs(readme): updated the readme")];
 
-        assert_eq!(new_version.get(), "v2.9.5");
+        assert_eq!(new_version.get(), "v2.0.0");
         assert_eq!(actual_major_changes, &expected_major_changes);
         assert_eq!(actual_minor_changes, &expected_minor_changes);
         assert_eq!(actual_patch_changes, &expected_patch_changes);
