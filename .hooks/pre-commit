@@ -22,6 +22,9 @@ cargo doc
 # Run tests
 cargo test
 
+# Check licenses
+cargo deny check licenses
+
 # Get the diff from git after formatting
 diff_post=($(git diff --name-only))
 
