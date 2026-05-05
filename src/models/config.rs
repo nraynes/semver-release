@@ -3,7 +3,7 @@ use r_log::LogLevel;
 use semver_common::{Alert, ChangeList, git};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
-use std::fs;
+use std::{fs, path::PathBuf};
 
 fn default_loglevel() -> LogLevel {
     LogLevel::INFO
@@ -62,7 +62,7 @@ pub struct Config {
 impl Config {
     /// Creates a new Config from a file at the supplied path, provided the file contains
     /// valid syntax for JSON and the config.
-    pub fn load_from_file(file_path: String) -> Result<Self, Alert> {
+    pub fn load_from_file(file_path: PathBuf) -> Result<Self, Alert> {
         let config_file = fs::read_to_string(file_path)?;
         let config: Config = serde_json::from_str(&config_file)?;
         Ok(config)

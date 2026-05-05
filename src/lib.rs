@@ -6,14 +6,14 @@
 //!
 //! See main.rs in the source code for usage.
 
+mod args;
 mod models;
 mod semver;
 mod tools;
 mod utils;
 
+pub use args::Args;
 pub use models::Config;
 pub use semver::SemVer;
-pub use tools::Changelog;
-pub use tools::analyzer;
-pub use utils::parse_args;
+pub use tools::{Changelog, analyzer};
 pub use utils::plugins;
