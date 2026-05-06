@@ -44,15 +44,9 @@
     "generate_changelog": true,
     "log_level": "DEBUG",
     "changelog_location": "CHANGELOG.md",
-    "git_auth_method": "GITHUB",
+    "git_auth_method": "NONE",
     "commit_changes": true,
     "push_changes": true,
     "plugin_location": ".release",
-    "plugins": {
-        "semver-cargo": {
-            "set_version": true,
-            "publish": true,
-            "act_on_no_update": false
-        }
-    }
+    "plugins": {}
 }

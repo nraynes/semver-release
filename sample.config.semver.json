@@ -4,7 +4,7 @@
         "changes": [
             {
                 "priority": 1,
-                "pattern": "^(.|\n)*BREAKING_CHANGE(.|\n)*$",
+                "pattern": "^(.|\n)*BREAKING CHANGE(.|\n)*$",
                 "kind": "BREAKING CHANGES"
             }
         ]
