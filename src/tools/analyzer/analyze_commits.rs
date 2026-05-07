@@ -8,7 +8,7 @@ use semver_common::{Alert, ChangeList, Commit, CommitMap, Version};
 /// # Example:
 ///
 /// ```
-#[doc = include_str!("../../../examples/analyze_commits_example.rs")]
+#[doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/examples/analyze_commits_example.rs"))]
 /// ```
 pub fn analyze_commits(
     commits: &[Commit],
