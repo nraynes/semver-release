@@ -1,10 +1,12 @@
-# Version: v0.20.0
+# Version: v1.0.0
+
+## BREAKING CHANGES
+
+- feat: test breaking change
+    
+    BREAKING CHANGE: This is a breaking change test
 
 ## Features
 
-- feat: added integration tests and cli man pages
-
-## Patches
-
-- fix: fixed analyze commits bug and added tests
+- feat: updated include_str
 
