@@ -7,6 +7,7 @@
 //! See main.rs in the source code for usage.
 
 mod args;
+pub mod mock;
 mod models;
 mod semver;
 mod tools;
