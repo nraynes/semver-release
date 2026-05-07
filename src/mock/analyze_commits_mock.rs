@@ -62,7 +62,7 @@ fn process_change_list(
             version
                 .changes()
                 .bucket(change.kind())
-                .unwrap_or(&CommitBucket::new(change.kind(), change.priority().clone()))
+                .unwrap_or(&CommitBucket::new(change.kind(), *change.priority()))
                 .commits()
                 .clone(),
         );
