@@ -17,6 +17,7 @@ use serde_json::Value;
 
 #[derive(Getters)]
 pub struct TestEnv {
+    #[allow(dead_code)]
     temp: TempDir,
     repo: ChildPath,
     config_path: ChildPath,
