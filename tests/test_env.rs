@@ -114,7 +114,7 @@ impl TestEnv {
             config_object.extend(overrides_object);
             config_value = serde_json::to_value(config_object).unwrap();
         }
-        serde_json::from_str(&serde_json::to_string(&config_value).unwrap()).unwrap()
+        serde_json::from_value(config_value).unwrap()
     }
 
     pub fn run(&mut self) {
