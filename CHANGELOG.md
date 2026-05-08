@@ -1,12 +1,6 @@
-# Version: v1.0.0
+# Version: v1.0.1
 
-## BREAKING CHANGES
+## Patches
 
-- feat: test breaking change
-    
-    BREAKING CHANGE: This is a breaking change test
-
-## Features
-
-- feat: updated include_str
+- fix: updated dependencies
 
