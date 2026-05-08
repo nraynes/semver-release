@@ -1,6 +1,6 @@
-# Version: v1.0.1
+# Version: v1.0.2
 
 ## Patches
 
-- fix: updated dependencies
+- fix: updated semver-common version
 
