@@ -1,6 +1,6 @@
-# Version: v1.0.3
+# Version: v1.0.4
 
 ## Patches
 
-- fix: updated logger
+- fix: updated version of semver-common
 
