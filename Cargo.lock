@@ -616,11 +616,10 @@ checksum = "f8dcc9c7d52a811697d2151c701e0d08956f92b0e24136cf4cf27b57a6a0d9bf"
 
 [[package]]
 name = "r_log"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a44d00220f4cbc272b9eeb63a352b5b3a14e9516987242ff0e164b5be6604136"
+checksum = "9b67669b92598f12f7d5fca36e9fd2580dc287de543865b44e9bbee2c274861b"
 dependencies = [
- "clap",
  "serde",
 ]
 
@@ -701,9 +700,9 @@ checksum = "8a7852d02fc848982e0c167ef163aaff9cd91dc640ba85e263cb1ce46fae51cd"
 
 [[package]]
 name = "semver-common"
-version = "1.2.3"
+version = "1.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b7b645093f2de83f7a670c8dac825e2080c7500a01ece8c0145675d71d0808bb"
+checksum = "70c45428313839815eaa1054df6946384ec718ceb99c8e63cdff7499e9ac735e"
 dependencies = [
  "chrono",
  "derive-getters",
