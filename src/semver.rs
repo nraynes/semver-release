@@ -29,11 +29,6 @@ impl SemVer {
     pub fn release(&self) -> Result<(), Alert> {
         self.logger.info("Starting Release Cycle");
 
-        // Authenticate git with the chosen method.
-        self.config
-            .git_auth_method()
-            .authenticate(&self.env, &self.logger)?;
-
         // Fetch commits from remote origin.
         self.logger.info("Fetching commit history");
         git::fetch(&self.logger)?;

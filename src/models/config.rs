@@ -1,6 +1,6 @@
 use derive_getters::Getters;
 use r_log::LogLevel;
-use semver_common::{Alert, ChangeList, git};
+use semver_common::{Alert, ChangeList};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::{fs, path::PathBuf};
@@ -45,8 +45,6 @@ pub struct Config {
     #[serde(default = "default_changelog_location")]
     changelog_location: String,
 
-    git_auth_method: git::auth::Auth,
-
     #[serde(default = "default_true")]
     commit_changes: bool,
 
@@ -73,7 +71,7 @@ impl Config {
 mod test {
     use serde_json::{Value, json};
 
-    use semver_common::{git::auth::Auth, mock};
+    use semver_common::mock;
 
     use super::*;
 
@@ -125,7 +123,6 @@ mod test {
             "generate_changelog": false,
             "log_level": "WARNING",
             "changelog_location": "THECHANGES.md",
-            "git_auth_method": "GITHUB",
             "commit_changes": true,
             "push_changes": true,
             "plugins": {}
@@ -158,7 +155,6 @@ mod test {
         assert_eq!(config.generate_changelog, false);
         assert_eq!(config.log_level, LogLevel::WARNING);
         assert_eq!(config.changelog_location, "THECHANGES.md");
-        assert_eq!(config.git_auth_method, Auth::GITHUB);
         assert_eq!(config.commit_changes, true);
         assert_eq!(config.push_changes, true);
     }
