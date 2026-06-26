@@ -1,6 +1,11 @@
 # Version: v1.0.4
 
-## Patches
+## Maintenance Items
 
-- fix: updated version of semver-common
+- chore: mmm
+- chore: update sem bins
+- chore: updated semver bins
+- chore: updated semver common version
+- chore: updated semver release bins
+- chore: yep
 
