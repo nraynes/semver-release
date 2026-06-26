@@ -1,11 +1,9 @@
 use crate::{Args, Changelog, Config, analyzer, plugins};
 use r_log::Logger;
 use semver_common::{Alert, Version, git};
-use std::collections::HashMap;
 
 pub struct SemVer {
     config: Config,
-    env: HashMap<String, String>,
     logger: Logger,
 }
 
@@ -13,15 +11,11 @@ impl SemVer {
     /// Initialize the SemVer object. This will attempt to parse arguments, read the config,
     /// setup the logger, and anything else that needs to happen before the release stage.
     /// If any of these cannot happen for some reason, an Err variant will be returned.
-    pub fn init(args: Args, env: HashMap<String, String>) -> Result<Self, Alert> {
+    pub fn init(args: Args) -> Result<Self, Alert> {
         let config = Config::load_from_file(args.config_path)?;
         let logger = Logger::new(config.log_level().clone());
         logger.info("Initialization complete");
-        Ok(SemVer {
-            config,
-            env,
-            logger,
-        })
+        Ok(SemVer { config, logger })
     }
 
     /// Starts the release stage. Reads the configuration that was loaded in the init
