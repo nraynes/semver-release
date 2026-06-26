@@ -3,6 +3,7 @@
 ## Maintenance Items
 
 - chore: mmm
+- chore: remove github token
 - chore: update sem bins
 - chore: updated semver bins
 - chore: updated semver common version
